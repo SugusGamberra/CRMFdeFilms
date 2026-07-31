@@ -49,6 +49,25 @@ export default async function DashboardPage() {
         revalidatePath('/dashboard')
     }
 
+    // BORRAR CLIENTE (server action)
+    
+    const borrarCliente = async (formData: FormData) => {
+        'use server'
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) return
+
+        // Extraccion del ID del cliente a borrar
+        const idCliente = formData.get('idCliente') as string
+
+        // borrar datos vinculados al id de la empresa activa
+        await supabase.from('clientes').delete().eq('id_cliente', idCliente).eq('id_empresa', user.id)
+
+        //refrescar datos del servidor
+        revalidatePath('/dashboard')
+    }
+
     return (
         <div className="mx-auto max-w-4xl p-8">
             <h1 className="mb-8 text-3xl font-bold text-slate-800">Gestión de clientes</h1>
@@ -137,7 +156,7 @@ export default async function DashboardPage() {
                 </form>
             </section>
 
-            {/*SECCION LISTADO / JSON TEMPORAL */}
+            {/*SECCION LISTADO */}
             <section>
                 <h2 className="mb-4 text-xl font-semibold text-slate-700">
                     Clientes Registrados
@@ -146,9 +165,25 @@ export default async function DashboardPage() {
                 {error ? (
                     <div className="mb-4 text-xl font-semibold text-slate-700">Error de Supabase: {error.message}</div>
                 ) : (
-                    <pre className="overflow-auto rounded-xl bg-slate-900 p-4 text-sm text-green-400">
-                        {JSON.stringify(clientes, null, 2)}
-                    </pre>
+                    <div className="space-y-4">
+                        {clientes?.map((cliente) => (
+                            <div key={cliente.id_cliente} className="rounded-lg border border-slate-300 p-4 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                
+                                <pre className="text-xs text-slate-600 overflow-auto w-full">
+                                    {JSON.stringify(cliente, null, 2)}
+                                </pre>
+
+                                {/*BOTON ELIMINAR */}
+                                <form action={borrarCliente} className="shrink-0">
+                                    <input type="hidden" name="idCliente" value={cliente.id_cliente} />
+                                    
+                                    <button type="submit" className="rounded bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700 transition-colors">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </section>
         </div>
