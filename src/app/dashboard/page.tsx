@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 //PANEL PRINCIPAL (DASHBOARD)
 // Vista para la gestión y alta  de clientes
@@ -144,9 +145,29 @@ export default async function DashboardPage() {
         revalidatePath('/dashboard')
     }
 
+    // CERRAR SESION (server action)
+    // Machaca la sesión en supabase y devuelve al login
+
+    const cerrarSesion = async() => {
+        'use server'
+        const supabase = await createClient()
+        await supabase.auth.signOut()
+        redirect('/login')
+    }
+
     return (
         <div className="mx-auto max-w-4xl p-8">
-            <h1 className="mb-8 text-3xl font-bold text-slate-800">Gestión de clientes</h1>
+            {/* BOTÓN DE SALIR */}
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="mb-8 text-3xl font-bold text-slate-800">Gestión de clientes</h1>
+
+                <form action={cerrarSesion}>
+                    <button type="submit" className="rounded-lg bg-slate-200 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-300 transition-colors">
+                        Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+            
 
             {/*FORMULARIO ALTA */}
 
