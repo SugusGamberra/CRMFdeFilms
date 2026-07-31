@@ -23,7 +23,6 @@ export default async function DashboardPage() {
 
         const { data: { user } } = await supabase.auth.getUser()
 
-
         if (!user) return
 
         // Extracción de campos del formulario
