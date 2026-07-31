@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 // Componente de servidor de next js para conectarse con server.ts
 
 import { createClient } from '@/lib/supabase/server'
@@ -23,6 +21,7 @@ export default async function DashboardPage() {
         const supabase = await createClient()
 
         const { data: { user } } = await supabase.auth.getUser()
+
 
         if (!user) return
 
@@ -154,4 +153,3 @@ export default async function DashboardPage() {
         </div>
     )
 }
->>>>>>> Stashed changes
