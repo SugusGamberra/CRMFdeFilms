@@ -48,7 +48,7 @@ export default function LoginPage() {
                 <form onSubmit={manejarLogin} className="space-y-5">
                     {/*CAMPO EMAIL */}
                     <div>
-                        <label className="mb-1.5 block text-sm font-medium text-slate-600" htmlor="email">
+                        <label className="mb-1.5 block text-sm font-medium text-slate-600" htmlFor="email">
                             Correo electrónico
                         </label>
 
