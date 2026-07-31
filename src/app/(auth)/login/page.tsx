@@ -73,22 +73,22 @@ export default function LoginPage() {
     */
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
-            <div className="w-full max-w-md rounded-2xl bg-white p-10 shadow-sm">
+        <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="w-full max-w-md rounded-3xl p-10 neu-raised">
                 
                 {/* TÍTULO DINÁMICO */}
-                <h1 className="mb-8 text-center text-3xl font-semibold tracking-tight text-slate-800">
+                <h1 className="mb-8 text-center text-3xl font-semibold tracking-tight text-gray-800 dark:text-gray-100">
                     {isLogin ? 'Acceso CRM' : 'Crear nueva cuenta'}
                 </h1>
                 
                 {/* MENSAJES DE ERROR O ÉXITO */}
                 {mensajeError && (
-                    <div className="mb-6 rounded-lg bg-red-50 p-4 text-sm font-medium text-red-500">
+                    <div className="mb-6 rounded-xl bg-red-100 dark:bg-red-900/30 p-4 text-sm font-medium text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800/50">
                         {mensajeError}
                     </div>
                 )}
                 {mensajeExito && (
-                    <div className="mb-6 rounded-lg bg-green-50 p-4 text-sm font-medium text-green-600">
+                    <div className="mb-6 rounded-xl bg-green-100 dark:bg-green-900/30 p-4 text-sm font-medium text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800/50">
                         {mensajeExito}
                     </div>
                 )}
@@ -97,7 +97,7 @@ export default function LoginPage() {
 
                     {/*CAMPO EMAIL */}
                     <div>
-                        <label className="mb-1.5 block text-sm font-medium text-slate-600" htmlFor="email">
+                        <label className="mb-1.5 block text-sm font-medium text-gray-600 dark:text-gray-300" htmlFor="email">
                             Correo electrónico
                         </label>
                         <input
@@ -106,14 +106,14 @@ export default function LoginPage() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 p-3.5 text-slate-800 outline-none transition-all focus:border-slate-400 focus:ring-1 focus:ring-slate-400"
+                            className="w-full px-4 py-3 rounded-xl text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 neu-inset bg-transparent"
                             placeholder="empresa@ejemplo.com"
                         />
                     </div>
 
                     {/*CAMPO CONTRASEÑA */}
                     <div>
-                        <label className="mb-1.5 block text-sm font-medium text-slate-600" htmlFor="password">
+                        <label className="mb-1.5 block text-sm font-medium text-gray-600 dark:text-gray-300" htmlFor="password">
                             Contraseña
                         </label>
                         <input
@@ -122,7 +122,7 @@ export default function LoginPage() {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 p-3.5 text-slate-800 outline-none transition-all focus:border-slate-400 focus:ring-1 focus:ring-slate-400"
+                            className="w-full px-4 py-3 rounded-xl text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 neu-inset bg-transparent"
                             placeholder="••••••••"
                         />
                     </div>
@@ -130,26 +130,25 @@ export default function LoginPage() {
                     {/*BOTON ENTRAR */}
                     <button
                         type="submit"
-                        className="mt-8 w-full rounded-xl bg-slate-900 p-4 font-medium text-white transition-colors hover:bg-slate-800 active:scale-[0.98]"
+                        className="neu-btn neu-focus mt-8 w-full py-3 px-6 rounded-xl text-sm font-medium text-white bg-gradient-to-br from-purple-600 to-purple-700 shadow-lg"
                     >
-
                         {isLogin ? 'Entrar' : 'Registrarse'}
                     </button>
                 </form>
 
                 {/*BOTÓN DE GOOGLE, descomentar cuando se configure google cloud */}
                 {/*
-                <div className="mt-4">
+                <div className="mt-6">
                     <div className="relative flex items-center py-5">
-                        <div className="flex-grow border-t border-slate-200"></div>
-                        <span className="flex-shrink-0 px-4 text-sm text-slate-400">O continúa con</span>
-                        <div className="flex-grow border-t border-slate-200"></div>
+                        <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                        <span className="flex-shrink-0 px-4 text-sm text-gray-500 dark:text-gray-400">O continúa con</span>
+                        <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
                     </div>
 
                     <button
-                        onClick={loginConGoogle}
+                        onClick={logingConGoogle}
                         type="button"
-                        className="w-full flex items-center justify-center gap-3 rounded-xl border border-slate-200 p-4 font-medium text-slate-700 transition-colors hover:bg-slate-50 active:scale-[0.98]"
+                        className="neu-raised neu-btn neu-focus w-full flex items-center justify-center gap-3 py-3 px-6 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300"
                     >
                         <svg className="h-5 w-5" viewBox="0 0 24 24">
                             <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -163,7 +162,7 @@ export default function LoginPage() {
                 */}
 
                 {/* INTERRUPTOR PARA CAMBIAR ENTRE LOGIN Y REGISTRO */}
-                <div className="mt-8 text-center text-sm text-slate-600">
+                <div className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
                     {isLogin ? '¿No tienes cuenta? ' : '¿Ya tienes cuenta? '}
                     <button
                         onClick={() => {
@@ -171,12 +170,12 @@ export default function LoginPage() {
                             setMensajeError('') // Limpiamos errores al cambiar de pestaña
                             setMensajeExito('')
                         }}
-                        className="font-semibold text-indigo-600 outline-none hover:underline"
+                        className="font-semibold text-purple-600 dark:text-purple-400 transition-colors hover:text-purple-700 dark:hover:text-purple-300 outline-none focus:outline-none hover:underline focus:underline"
                     >
                         {isLogin ? 'Regístrate aquí' : 'Inicia sesión'}
                     </button>
                 </div>
-
+                
             </div>
         </div>
     )
