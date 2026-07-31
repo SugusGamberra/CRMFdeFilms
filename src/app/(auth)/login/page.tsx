@@ -14,7 +14,7 @@ export default function LoginPage() {
     const router = useRouter()
     const supabase = createClient()
 
-    // MANEJO DE LOGIN
+    // MANEJO DEL LOGIN
     // Ejecuto la llamada a supabase auth y redirige al dashboard si todo sale bien
     const manejarLogin = async (e: React.FormEvent) => {
         e.preventDefault()
