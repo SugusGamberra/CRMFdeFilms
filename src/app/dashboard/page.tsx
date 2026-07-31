@@ -48,6 +48,36 @@ export default async function DashboardPage() {
         revalidatePath('/dashboard')
     }
 
+    //ACTUALIZAR CLIENTE (server action)
+
+    const actualizarCliente = async (formData: FormData) => {
+        'use server'
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) return
+
+        // Se extraen datos del formulario
+        const idCliente = formData.get('idCliente') as string
+        const nombreCompleto = formData.get('nombreCompleto') as string
+        const cifNif = formData.get('cifNif') as string
+        const email = formData.get('email') as string
+        const telefono = formData.get('telefono') as string
+        const direccionFacturacion = formData.get('direccionFacturacion') as string
+
+        // Actualizar BBDD
+        await supabase.from('clientes').update({
+            nombre_completo: nombreCompleto,
+            cif_nif: cifNif,
+            email: email,
+            telefono: telefono,
+            direccion_facturacion: direccionFacturacion,
+        }).eq('id_cliente', idCliente).eq('id_empresa', user.id)
+
+        // refrescar datos del server
+        revalidatePath('/dashboard')
+    }
+
     // BORRAR CLIENTE (server action)
     
     const borrarCliente = async (formData: FormData) => {
@@ -166,14 +196,26 @@ export default async function DashboardPage() {
                 ) : (
                     <div className="space-y-4">
                         {clientes?.map((cliente) => (
-                            <div key={cliente.id_cliente} className="rounded-lg border border-slate-300 p-4 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div key={cliente.id_cliente} className="rounded-lg border border-slate-300 p-4 bg-slate-50 flex flex-col gap-4">
                                 
-                                <pre className="text-xs text-slate-600 overflow-auto w-full">
-                                    {JSON.stringify(cliente, null, 2)}
-                                </pre>
+                                {/*MINI FORMULARIO EDITAR */}
+                                <form action={actualizarCliente} className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-6 w-full">
+                                    <input type="hidden" name="idCliente" value={cliente.id_cliente} />
+                                    
+                                    <input type="text" name="nombreCompleto" defaultValue={cliente.nombre_completo || ''} placeholder="Nombre" className="w-full rounded border border-slate-300 p-2 text-sm outline-none focus:border-indigo-500" />
+                                    <input type="text" name="cifNif" defaultValue={cliente.cif_nif || ''} placeholder="CIF/NIF" className="w-full rounded border border-slate-300 p-2 text-sm outline-none focus:border-indigo-500" />
+                                    <input type="email" name="email" defaultValue={cliente.email || ''} placeholder="Email" className="w-full rounded border border-slate-300 p-2 text-sm outline-none focus:border-indigo-500" />
+                                    <input type="tel" name="telefono" defaultValue={cliente.telefono || ''} placeholder="Teléfono" className="w-full rounded border border-slate-300 p-2 text-sm outline-none focus:border-indigo-500" />
+                                    <input type="text" name="direccionFacturacion" defaultValue={cliente.direccion_facturacion || ''} placeholder="Dirección" className="w-full rounded border border-slate-300 p-2 text-sm outline-none focus:border-indigo-500" />
+                                    
+                                    {/*BOTON ACTUALIZAR */}
+                                    <button type="submit" className="w-full rounded bg-indigo-600 px-2 py-2 text-sm font-bold text-white hover:bg-indigo-700 transition-colors">
+                                        Actualizar
+                                    </button>
+                                </form>
 
                                 {/*BOTON ELIMINAR */}
-                                <form action={borrarCliente} className="shrink-0">
+                                <form action={borrarCliente} className="shrink-0 self-end">
                                     <input type="hidden" name="idCliente" value={cliente.id_cliente} />
                                     
                                     <button type="submit" className="rounded bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700 transition-colors">
