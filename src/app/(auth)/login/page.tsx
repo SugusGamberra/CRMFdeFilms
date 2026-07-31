@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 'use client'
 
 import { useState } from 'react'
@@ -134,6 +132,7 @@ export default function LoginPage() {
                         type="submit"
                         className="mt-8 w-full rounded-xl bg-slate-900 p-4 font-medium text-white transition-colors hover:bg-slate-800 active:scale-[0.98]"
                     >
+
                         {isLogin ? 'Entrar' : 'Registrarse'}
                     </button>
                 </form>
@@ -182,4 +181,3 @@ export default function LoginPage() {
         </div>
     )
 }
->>>>>>> Stashed changes
