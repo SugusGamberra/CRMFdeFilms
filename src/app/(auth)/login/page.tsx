@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import OceanBackground from '@/components/OceanBackground'
 
 // PAGINA DE LOGIN Y REGISTRO
 // Componente visual y logico para autenticacion y creacion de usuarios en el crm
@@ -49,7 +50,7 @@ export default function LoginPage() {
             if (error) {
                 setMensajeError(error.message)
             } else {
-                setMensajeExito('¡Registro exitoso! Comprueba tu correo electrónico y confirma tu dirección de email.')
+                setMensajeExito('Registro exitoso! Comprueba tu correo electrónico y confirma tu dirección de email.')
                 setIsLogin(true)
                 setPassword('')
             }
@@ -73,8 +74,10 @@ export default function LoginPage() {
     */
 
     return (
-        <div className="flex min-h-screen items-center justify-center p-4">
-            <div className="w-full max-w-md rounded-3xl p-10 neu-raised">
+        <div className="relative flex min-h-screen items-center justify-center p-4 overflow-hidden">
+            <OceanBackground />
+            
+            <div className="relative z-10 w-full max-w-md rounded-3xl p-10 neu-raised bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
                 
                 {/* TÍTULO DINÁMICO */}
                 <h1 className="mb-8 text-center text-3xl font-semibold tracking-tight text-gray-800 dark:text-gray-100">
@@ -130,7 +133,8 @@ export default function LoginPage() {
                     {/*BOTON ENTRAR */}
                     <button
                         type="submit"
-                        className="neu-btn neu-focus mt-8 w-full py-3 px-6 rounded-xl text-sm font-medium text-white bg-gradient-to-br from-purple-600 to-purple-700 shadow-lg"
+                        className="neu-btn neu-focus mt-8 w-full py-3 px-6 rounded-xl text-sm font-medium text-white shadow-lg cursor-pointer transition-colors duration-1000"
+                        style={{ backgroundColor: 'var(--dynamic-accent)' }}
                     >
                         {isLogin ? 'Entrar' : 'Registrarse'}
                     </button>
@@ -148,7 +152,7 @@ export default function LoginPage() {
                     <button
                         onClick={logingConGoogle}
                         type="button"
-                        className="neu-raised neu-btn neu-focus w-full flex items-center justify-center gap-3 py-3 px-6 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300"
+                        className="neu-raised neu-btn neu-focus w-full flex items-center justify-center gap-3 py-3 px-6 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 cursor-pointer"
                     >
                         <svg className="h-5 w-5" viewBox="0 0 24 24">
                             <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -167,10 +171,11 @@ export default function LoginPage() {
                     <button
                         onClick={() => {
                             setIsLogin(!isLogin)
-                            setMensajeError('') // Limpiamos errores al cambiar de pestaña
+                            setMensajeError('')
                             setMensajeExito('')
                         }}
-                        className="font-semibold text-purple-600 dark:text-purple-400 transition-colors hover:text-purple-700 dark:hover:text-purple-300 outline-none focus:outline-none hover:underline focus:underline"
+                        className="font-semibold transition-colors outline-none focus:outline-none hover:underline focus:underline cursor-pointer duration-1000"
+                        style={{ color: 'var(--dynamic-accent)' }}
                     >
                         {isLogin ? 'Regístrate aquí' : 'Inicia sesión'}
                     </button>
