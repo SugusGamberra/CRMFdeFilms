@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { crearCliente, actualizarCliente, borrarCliente } from './actions'
 import OceanBackground from '@/components/OceanBackground'
 import UserMenu from '@/components/UserMenu'
@@ -29,6 +29,7 @@ interface Cliente {
     tfno_contacto?: string
     email_contacto?: string
     notas?: string
+    created_at?: string
 }
 
 export default function DashboardClient({ clientes, error }: { clientes: Cliente[], error?: string }) {
@@ -40,6 +41,43 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
 
     const [tipoClienteNuevo, setTipoClienteNuevo] = useState('')
     const [tipoClienteEdit, setTipoClienteEdit] = useState('')
+
+    {/* ESTADOS DEL BUSCADOR Y FILTROS */}
+    const [searchTerm, setSearchTerm] = useState('')
+    const [filterType, setFilterType] = useState('')
+    const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc')
+    const [isMounted, setIsMounted] = useState(false)
+
+    useEffect(() => {
+        setIsMounted(true)
+        const savedFilter = localStorage.getItem('crm_filterType')
+        const savedSort = localStorage.getItem('crm_sortOrder') as 'desc' | 'asc'
+        if (savedFilter) setFilterType(savedFilter)
+        if (savedSort) setSortOrder(savedSort)
+    }, [])
+
+    useEffect(() => {
+        if (isMounted) {
+            localStorage.setItem('crm_filterType', filterType)
+            localStorage.setItem('crm_sortOrder', sortOrder)
+        }
+    }, [filterType, sortOrder, isMounted])
+
+    const filteredAndSortedClientes = clientes?.filter(cliente => {
+        const matchesSearch = searchTerm === '' || 
+            cliente.nombre_completo.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            (cliente.cif_nif && cliente.cif_nif.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (cliente.email && cliente.email.toLowerCase().includes(searchTerm.toLowerCase()))
+            
+        const matchesFilter = filterType === '' || cliente.tipo_cliente === filterType
+        
+        return matchesSearch && matchesFilter
+    }).sort((a, b) => {
+        const dateA = a.created_at || ''
+        const dateB = b.created_at || ''
+        if (sortOrder === 'asc') return dateA.localeCompare(dateB)
+        return dateB.localeCompare(dateA)
+    })
 
     return (
         <div className="relative min-h-screen w-full p-4 pt-20 md:p-8 md:pt-24">
@@ -269,7 +307,38 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                             <div className="mb-4 text-xl font-semibold text-red-500 dark:text-red-400">Error de Supabase: {error}</div>
                         ) : (
                             <div className="space-y-4">
-                                {clientes?.map((cliente) => (
+                                
+                                {/* BARRA DE BÚSQUEDA Y FILTROS */}
+                                <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50/50 dark:bg-black/20 p-4 rounded-2xl border border-gray-200 dark:border-white/10">
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar por nombre, CIF, email..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5"
+                                    />
+                                    <select
+                                        value={filterType}
+                                        onChange={(e) => setFilterType(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-xl text-sm text-gray-800 dark:text-white transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 cursor-pointer"
+                                    >
+                                        <option value="" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Todos los tipos</option>
+                                        <option value="Particular" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Particular</option>
+                                        <option value="Empresa" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Empresa</option>
+                                        <option value="Organismo público" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Organismo público</option>
+                                        <option value="Otro" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Otro</option>
+                                    </select>
+                                    <select
+                                        value={sortOrder}
+                                        onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                                        className="w-full px-4 py-2 rounded-xl text-sm text-gray-800 dark:text-white transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 cursor-pointer"
+                                    >
+                                        <option value="desc" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Más recientes primero</option>
+                                        <option value="asc" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Más antiguos primero</option>
+                                    </select>
+                                </div>
+
+                                {filteredAndSortedClientes?.map((cliente) => (
                                     <div key={cliente.id_cliente} className="rounded-2xl border border-gray-200 dark:border-white/10 p-5 neu-flat bg-gray-50/50 dark:bg-black/20 flex flex-col gap-4 transition-all">
                                         
                                         {editingId === cliente.id_cliente ? (
@@ -474,8 +543,8 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                         <h3 className="text-xl font-bold text-gray-800 dark:text-white">{cliente.nombre_completo}</h3>
                                                         <p className="text-sm text-gray-500 dark:text-white/60">
                                                             {cliente.tipo_cliente === 'Empresa' && cliente.subtipo_empresa ? `Empresa - ${cliente.subtipo_empresa}` : 
-                                                             cliente.tipo_cliente === 'Otro' && cliente.tipo_otro ? `Otro: ${cliente.tipo_otro}` :
-                                                             cliente.tipo_cliente || 'Sin tipo definido'} • {cliente.cif_nif || 'Sin CIF/NIF'}
+                                                            cliente.tipo_cliente === 'Otro' && cliente.tipo_otro ? `Otro: ${cliente.tipo_otro}` :
+                                                            cliente.tipo_cliente || 'Sin tipo definido'} • {cliente.cif_nif || 'Sin CIF/NIF'}
                                                         </p>
                                                     </div>
                                                     <div className="flex gap-2">
