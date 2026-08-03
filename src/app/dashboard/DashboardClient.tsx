@@ -27,6 +27,7 @@ interface Cliente {
     persona_contacto?: string
     tfno_contacto?: string
     email_contacto?: string
+    notas?: string
 }
 
 export default function DashboardClient({ clientes, error }: { clientes: Cliente[], error?: string }) {
@@ -195,6 +196,15 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                 <input type="email" name="emailContacto" placeholder="Ej: maria@empresa.com" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
 
+                            {/* NOTAS ADICIONALES */}
+                            <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
+                                <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Notas Adicionales</h3>
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Observaciones (Recargo de equivalencia, exento de IVA, etc.)</label>
+                                <textarea name="notas" rows={3} placeholder="Añade aquí cualquier nota importante sobre este cliente..." className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5"></textarea>
+                            </div>
+
                             {/*BOTÓN GUARDAR */}
                             <div className="sm:col-span-2 mt-4">
                                 <button type="submit" className="neu-btn neu-focus cursor-pointer w-full rounded-xl py-3 font-medium text-white shadow-lg transition-colors duration-1000 border border-transparent dark:border-white/10" style={{ backgroundColor: 'var(--dynamic-accent)' }}>
@@ -340,6 +350,15 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     <input type="email" name="emailContacto" defaultValue={cliente.email_contacto || ''} placeholder="Ej: maria@empresa.com" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
                                                 
+                                                {/* NOTAS ADICIONALES */}
+                                                <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
+                                                    <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Notas Adicionales</h3>
+                                                </div>
+                                                <div className="sm:col-span-2">
+                                                    <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Observaciones (Recargo de equivalencia, exento de IVA, etc.)</label>
+                                                    <textarea name="notas" defaultValue={cliente.notas || ''} rows={3} placeholder="Añade aquí cualquier nota importante sobre este cliente..." className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5"></textarea>
+                                                </div>
+
                                                 {/* BOTONES DE EDICIÓN */}
                                                 <div className="sm:col-span-2 flex gap-4 mt-4">
                                                     <button type="button" onClick={() => {
@@ -410,6 +429,14 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                         <p>Email: {cliente.email_contacto || '-'}</p>
                                                     </div>
                                                 </div>
+
+                                                {/* SECCIÓN NOTAS EN LECTURA */}
+                                                {cliente.notas && (
+                                                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/10">
+                                                        <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Notas / Observaciones</p>
+                                                        <p className="text-sm text-gray-600 dark:text-white/80 whitespace-pre-wrap">{cliente.notas}</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>

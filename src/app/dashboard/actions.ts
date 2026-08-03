@@ -5,7 +5,6 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 // AÑADIR CLIENTE (server action)
-
 export async function crearCliente(formData: FormData) {
     const supabase = await createClient()
 
@@ -42,6 +41,7 @@ export async function crearCliente(formData: FormData) {
         localidad_envio: formData.get('localidadEnvio') as string,
         provincia_envio: formData.get('provinciaEnvio') as string,
         pais_envio: formData.get('paisEnvio') as string,
+        notas: formData.get('notas') as string,
         web: formData.get('web') as string,
         tipo_cliente: formData.get('tipoCliente') as string,
     }])
@@ -51,7 +51,6 @@ export async function crearCliente(formData: FormData) {
 }
 
 //ACTUALIZAR CLIENTE (server action)
-
 export async function actualizarCliente(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -80,6 +79,7 @@ export async function actualizarCliente(formData: FormData) {
         localidad_envio: formData.get('localidadEnvio') as string,
         provincia_envio: formData.get('provinciaEnvio') as string,
         pais_envio: formData.get('paisEnvio') as string,
+        notas: formData.get('notas') as string,
         web: formData.get('web') as string,
         tipo_cliente: formData.get('tipoCliente') as string,
     }).eq('id_cliente', idCliente).eq('id_empresa', user.id)
@@ -89,7 +89,6 @@ export async function actualizarCliente(formData: FormData) {
 }
 
 // BORRAR CLIENTE (server action)
-
 export async function borrarCliente(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -107,7 +106,6 @@ export async function borrarCliente(formData: FormData) {
 
 // CERRAR SESIÓN (server action)
 // Machaca la sesión en supabase y devuelve al login
-
 export async function cerrarSesion() {
     const supabase = await createClient()
     await supabase.auth.signOut()
