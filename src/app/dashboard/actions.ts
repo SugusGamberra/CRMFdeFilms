@@ -38,6 +38,10 @@ export async function crearCliente(formData: FormData) {
         tfno_contacto: formData.get('tfnoContacto') as string,
         email_contacto: formData.get('emailContacto') as string,
         direccion_envio: formData.get('direccionEnvio') as string,
+        codigo_postal_envio: formData.get('codigoPostalEnvio') as string,
+        localidad_envio: formData.get('localidadEnvio') as string,
+        provincia_envio: formData.get('provinciaEnvio') as string,
+        pais_envio: formData.get('paisEnvio') as string,
         web: formData.get('web') as string,
         tipo_cliente: formData.get('tipoCliente') as string,
     }])
@@ -72,6 +76,10 @@ export async function actualizarCliente(formData: FormData) {
         tfno_contacto: formData.get('tfnoContacto') as string,
         email_contacto: formData.get('emailContacto') as string,
         direccion_envio: formData.get('direccionEnvio') as string,
+        codigo_postal_envio: formData.get('codigoPostalEnvio') as string,
+        localidad_envio: formData.get('localidadEnvio') as string,
+        provincia_envio: formData.get('provinciaEnvio') as string,
+        pais_envio: formData.get('paisEnvio') as string,
         web: formData.get('web') as string,
         tipo_cliente: formData.get('tipoCliente') as string,
     }).eq('id_cliente', idCliente).eq('id_empresa', user.id)

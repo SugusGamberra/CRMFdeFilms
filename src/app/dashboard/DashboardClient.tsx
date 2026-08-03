@@ -16,6 +16,10 @@ interface Cliente {
     telefono?: string
     direccion_facturacion?: string
     direccion_envio?: string
+    codigo_postal_envio?: string
+    localidad_envio?: string
+    provincia_envio?: string
+    pais_envio?: string
     localidad?: string
     provincia?: string
     codigo_postal?: string
@@ -28,6 +32,10 @@ interface Cliente {
 export default function DashboardClient({ clientes, error }: { clientes: Cliente[], error?: string }) {
     const [activeTab, setActiveTab] = useState('lista')
     const [editingId, setEditingId] = useState<string | null>(null)
+    
+    // Estados para los desplegables de dirección de envío
+    const [mostrarEnvio, setMostrarEnvio] = useState(false)
+    const [mostrarEnvioEdit, setMostrarEnvioEdit] = useState(false)
 
     return (
         <div className="relative min-h-screen w-full p-4 pt-20 md:p-8 md:pt-24">
@@ -66,6 +74,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                         <form action={async (formData) => {
                             await crearCliente(formData)
                             setActiveTab('lista')
+                            setMostrarEnvio(false) // Reseteamos el desplegable tras guardar
                         }} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             
                             {/*DATOS PRINCIPALES */}
@@ -98,21 +107,21 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                 <input type="tel" name="telefono" placeholder="Ej: +34 612 345 678" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
 
-                            {/*DATOS DE DIRECCIÓN */}
+                            {/*DATOS DE DIRECCIÓN (FACTURACIÓN) */}
                             <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
-                                <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Datos de Facturación y Envío</h3>
+                                <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Datos de Facturación</h3>
                             </div>
 
                             <div className="sm:col-span-2">
                                 <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Facturación</label>
                                 <input type="text" name="direccionFacturacion" placeholder="Ej: Calle Hécate, 1" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
-                            <div className="sm:col-span-2">
-                                <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Envío</label>
-                                <input type="text" name="direccionEnvio" placeholder="Si es distinta a la de facturación..." className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                            <div>
+                                <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal</label>
+                                <input type="text" name="codigoPostal" placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad</label>
+                                <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad (Ciudad)</label>
                                 <input type="text" name="localidad" placeholder="Ej: Puerto Real" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
                             <div>
@@ -120,13 +129,53 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                 <input type="text" name="provincia" placeholder="Ej: Cádiz" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal</label>
-                                <input type="text" name="codigoPostal" placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
-                            </div>
-                            <div>
                                 <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">País</label>
                                 <input type="text" name="pais" placeholder="Ej: España" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
+
+                            {/* TOGGLE: DIRECCIÓN DE ENVÍO */}
+                            <div className="sm:col-span-2 mt-2">
+                                <div 
+                                    onClick={() => setMostrarEnvio(!mostrarEnvio)}
+                                    className="flex items-center justify-between p-4 rounded-xl neu-inset bg-gray-100/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-200/50 dark:hover:bg-white/10 transition-colors"
+                                >
+                                    <span className="text-sm font-bold text-gray-700 dark:text-white/90">Envío a una dirección diferente</span>
+                                    <svg 
+                                        className={`w-5 h-5 text-gray-500 dark:text-white/60 transition-transform duration-300 ease-in-out ${mostrarEnvio ? 'rotate-180' : 'rotate-0'}`} 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {/* CAMPOS DIRECCIÓN DE ENVÍO (DESPLEGABLE) */}
+                            {mostrarEnvio && (
+                                <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 mt-2 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-black/20 animate-in fade-in slide-in-from-top-4 duration-300">
+                                    <div className="sm:col-span-2">
+                                        <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Envío</label>
+                                        <input type="text" name="direccionEnvio" placeholder="Ej: Calle Artemisa, 2" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                    </div>
+                                    <div>
+                                        <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal (Envío)</label>
+                                        <input type="text" name="codigoPostalEnvio" placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                    </div>
+                                    <div>
+                                        <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad (Envío)</label>
+                                        <input type="text" name="localidadEnvio" placeholder="Ej: Puerto Real" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                    </div>
+                                    <div>
+                                        <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Provincia (Envío)</label>
+                                        <input type="text" name="provinciaEnvio" placeholder="Ej: Cádiz" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                    </div>
+                                    <div>
+                                        <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">País (Envío)</label>
+                                        <input type="text" name="paisEnvio" placeholder="Ej: España" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                    </div>
+                                </div>
+                            )}
 
                             {/*DATOS DE CONTACTO ESPECÍFICO */}
                             <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
@@ -171,6 +220,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                             <form action={async (formData) => {
                                                 await actualizarCliente(formData)
                                                 setEditingId(null)
+                                                setMostrarEnvioEdit(false)
                                             }} className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-2">
                                                 <input type="hidden" name="idCliente" value={cliente.id_cliente} />
                                                 
@@ -204,20 +254,20 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     <input type="tel" name="telefono" defaultValue={cliente.telefono || ''} placeholder="Ej: +34 612 345 678" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
 
-                                                {/*DATOS DE DIRECCIÓN */}
+                                                {/*DATOS DE DIRECCIÓN (FACTURACIÓN) */}
                                                 <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
-                                                    <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Datos de Facturación y Envío</h3>
+                                                    <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Datos de Facturación</h3>
                                                 </div>
                                                 <div className="sm:col-span-2">
                                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Facturación</label>
                                                     <input type="text" name="direccionFacturacion" defaultValue={cliente.direccion_facturacion || ''} placeholder="Ej: Calle Hécate, 1" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
-                                                <div className="sm:col-span-2">
-                                                    <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Envío</label>
-                                                    <input type="text" name="direccionEnvio" defaultValue={cliente.direccion_envio || ''} placeholder="Si es distinta a la de facturación..." className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                                <div>
+                                                    <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal</label>
+                                                    <input type="text" name="codigoPostal" defaultValue={cliente.codigo_postal || ''} placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
                                                 <div>
-                                                    <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad</label>
+                                                    <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad (Ciudad)</label>
                                                     <input type="text" name="localidad" defaultValue={cliente.localidad || ''} placeholder="Ej: Puerto Real" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
                                                 <div>
@@ -225,13 +275,53 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     <input type="text" name="provincia" defaultValue={cliente.provincia || ''} placeholder="Ej: Cádiz" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
                                                 <div>
-                                                    <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal</label>
-                                                    <input type="text" name="codigoPostal" defaultValue={cliente.codigo_postal || ''} placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
-                                                </div>
-                                                <div>
                                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">País</label>
                                                     <input type="text" name="pais" defaultValue={cliente.pais || ''} placeholder="Ej: España" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
+
+                                                {/* TOGGLE: DIRECCIÓN DE ENVÍO */}
+                                                <div className="sm:col-span-2 mt-2">
+                                                    <div 
+                                                        onClick={() => setMostrarEnvioEdit(!mostrarEnvioEdit)}
+                                                        className="flex items-center justify-between p-4 rounded-xl neu-inset bg-gray-100/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-200/50 dark:hover:bg-white/10 transition-colors"
+                                                    >
+                                                        <span className="text-sm font-bold text-gray-700 dark:text-white/90">Envío a una dirección diferente</span>
+                                                        <svg 
+                                                            className={`w-5 h-5 text-gray-500 dark:text-white/60 transition-transform duration-300 ease-in-out ${mostrarEnvioEdit ? 'rotate-180' : 'rotate-0'}`} 
+                                                            fill="none" 
+                                                            stroke="currentColor" 
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+
+                                                {/* CAMPOS DIRECCIÓN DE ENVÍO (DESPLEGABLE) */}
+                                                {mostrarEnvioEdit && (
+                                                    <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 mt-2 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-black/20 animate-in fade-in slide-in-from-top-4 duration-300">
+                                                        <div className="sm:col-span-2">
+                                                            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Envío</label>
+                                                            <input type="text" name="direccionEnvio" defaultValue={cliente.direccion_envio || ''} placeholder="Ej: Calle Artemisa, 2" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal (Envío)</label>
+                                                            <input type="text" name="codigoPostalEnvio" defaultValue={cliente.codigo_postal_envio || ''} placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad (Envío)</label>
+                                                            <input type="text" name="localidadEnvio" defaultValue={cliente.localidad_envio || ''} placeholder="Ej: Puerto Real" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Provincia (Envío)</label>
+                                                            <input type="text" name="provinciaEnvio" defaultValue={cliente.provincia_envio || ''} placeholder="Ej: Cádiz" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                                        </div>
+                                                        <div>
+                                                            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">País (Envío)</label>
+                                                            <input type="text" name="paisEnvio" defaultValue={cliente.pais_envio || ''} placeholder="Ej: España" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                                        </div>
+                                                    </div>
+                                                )}
 
                                                 {/*DATOS DE CONTACTO ESPECÍFICO */}
                                                 <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
@@ -252,7 +342,10 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                 
                                                 {/* BOTONES DE EDICIÓN */}
                                                 <div className="sm:col-span-2 flex gap-4 mt-4">
-                                                    <button type="button" onClick={() => setEditingId(null)} className="neu-btn neu-focus cursor-pointer w-full rounded-xl bg-gray-200 dark:bg-white/10 py-3 font-medium text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-white/20 transition-colors border border-gray-300 dark:border-white/5">
+                                                    <button type="button" onClick={() => {
+                                                        setEditingId(null)
+                                                        setMostrarEnvioEdit(false)
+                                                    }} className="neu-btn neu-focus cursor-pointer w-full rounded-xl bg-gray-200 dark:bg-white/10 py-3 font-medium text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-white/20 transition-colors border border-gray-300 dark:border-white/5">
                                                         Cancelar
                                                     </button>
                                                     <button type="submit" className="neu-btn neu-focus cursor-pointer w-full rounded-xl py-3 font-medium text-white shadow-lg transition-colors duration-1000 border border-transparent dark:border-white/10" style={{ backgroundColor: 'var(--dynamic-accent)' }}>
@@ -269,7 +362,11 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                         <p className="text-sm text-gray-500 dark:text-white/60">{cliente.tipo_cliente || 'Sin tipo definido'} • {cliente.cif_nif || 'Sin CIF/NIF'}</p>
                                                     </div>
                                                     <div className="flex gap-2">
-                                                        <button onClick={() => setEditingId(cliente.id_cliente)} className="neu-btn neu-focus cursor-pointer rounded-lg px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors duration-1000 border border-transparent dark:border-white/10" style={{ backgroundColor: 'var(--dynamic-accent)' }}>
+                                                        <button onClick={() => {
+                                                            setEditingId(cliente.id_cliente)
+                                                            // Si ya tenía dirección de envío guardada, lo abrimos directamente
+                                                            if (cliente.direccion_envio) setMostrarEnvioEdit(true)
+                                                        }} className="neu-btn neu-focus cursor-pointer rounded-lg px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors duration-1000 border border-transparent dark:border-white/10" style={{ backgroundColor: 'var(--dynamic-accent)' }}>
                                                             Editar
                                                         </button>
                                                         <form action={borrarCliente}>
@@ -281,15 +378,27 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     </div>
                                                 </div>
                                                 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-white/80">
+                                                {/* DINÁMICO: Si hay dirección de envío, se divide en 4 columnas (2 en móvil). Si no, en 3. */}
+                                                <div className={`grid grid-cols-1 ${cliente.direccion_envio ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-3'} gap-4 text-sm text-gray-600 dark:text-white/80`}>
                                                     <div>
                                                         <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Contacto Empresa</p>
                                                         <p>Email: {cliente.email || '-'}</p>
                                                         <p>Tel: {cliente.telefono || '-'}</p>
                                                         <p>Web: {cliente.web || '-'}</p>
                                                     </div>
+                                                    
+                                                    {/* Esta columna solo sale si hay dirección de envío */}
+                                                    {cliente.direccion_envio && (
+                                                        <div>
+                                                            <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Dirección de Envío</p>
+                                                            <p>{cliente.direccion_envio}</p>
+                                                            <p>{cliente.localidad_envio || '-'}, {cliente.provincia_envio || '-'}</p>
+                                                            <p>{cliente.codigo_postal_envio || '-'} {cliente.pais_envio || '-'}</p>
+                                                        </div>
+                                                    )}
+
                                                     <div>
-                                                        <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Dirección Principal</p>
+                                                        <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Dirección de Facturación</p>
                                                         <p>{cliente.direccion_facturacion || '-'}</p>
                                                         <p>{cliente.localidad || '-'}, {cliente.provincia || '-'}</p>
                                                         <p>{cliente.codigo_postal || '-'} {cliente.pais || '-'}</p>
