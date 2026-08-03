@@ -5,12 +5,13 @@ import { crearCliente, actualizarCliente, borrarCliente } from './actions'
 import OceanBackground from '@/components/OceanBackground'
 import UserMenu from '@/components/UserMenu'
 
-// MOLDE DE TS
 interface Cliente {
     id_cliente: string
     nombre_completo: string
     cif_nif?: string
     tipo_cliente?: string
+    subtipo_empresa?: string
+    tipo_otro?: string
     web?: string
     email?: string
     telefono?: string
@@ -34,9 +35,11 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
     const [activeTab, setActiveTab] = useState('lista')
     const [editingId, setEditingId] = useState<string | null>(null)
     
-    // Estados para los desplegables de dirección de envío
     const [mostrarEnvio, setMostrarEnvio] = useState(false)
     const [mostrarEnvioEdit, setMostrarEnvioEdit] = useState(false)
+
+    const [tipoClienteNuevo, setTipoClienteNuevo] = useState('')
+    const [tipoClienteEdit, setTipoClienteEdit] = useState('')
 
     return (
         <div className="relative min-h-screen w-full p-4 pt-20 md:p-8 md:pt-24">
@@ -47,7 +50,6 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                 {/* CABECERA */}
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">Gestión de clientes</h1>
-                    {/* MENU MODULAR */}
                     <UserMenu />
                 </div>
 
@@ -69,21 +71,22 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                     </button>
                 </div>
 
-                {/* PESTAÑA ALTA DE CLIENTE*/}
+                {/* PESTAÑA ALTA DE CLIENTE */}
                 {activeTab === 'nuevo' && (
                     <section className="mb-10 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-black/20 p-6 shadow-inner">
                         <form action={async (formData) => {
                             await crearCliente(formData)
                             setActiveTab('lista')
-                            setMostrarEnvio(false) // Reseteamos el desplegable tras guardar
+                            setMostrarEnvio(false)
+                            setTipoClienteNuevo('')
                         }} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             
-                            {/*DATOS PRINCIPALES */}
+                            {/* DATOS PRINCIPALES */}
                             <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2">
                                 <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Datos Principales</h3>
                             </div>
                             
-                            <div className="sm:col-span-2">
+                            <div>
                                 <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Nombre Completo / Razón Social *</label>
                                 <input type="text" name="nombreCompleto" required placeholder="Ej: EcoMagic" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
@@ -91,10 +94,54 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                 <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">CIF / NIF</label>
                                 <input type="text" name="cifNif" placeholder="Ej: B12345678" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
+                            
                             <div>
                                 <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Tipo de Cliente</label>
-                                <input type="text" name="tipoCliente" placeholder="Ej: Mayorista, Particular..." className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                <select 
+                                    name="tipoCliente" 
+                                    value={tipoClienteNuevo}
+                                    onChange={(e) => setTipoClienteNuevo(e.target.value)}
+                                    className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 cursor-pointer"
+                                >
+                                    <option value="" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Selecciona un tipo...</option>
+                                    <option value="Particular" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Particular</option>
+                                    <option value="Empresa" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Empresa</option>
+                                    <option value="Organismo público" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Organismo público</option>
+                                    <option value="Otro" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Otro</option>
+                                </select>
                             </div>
+
+                            <div>
+                                {tipoClienteNuevo === 'Empresa' && (
+                                    <>
+                                        <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Subtipo de Empresa</label>
+                                        <select 
+                                            name="subtipoEmpresa" 
+                                            className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 cursor-pointer animate-in fade-in zoom-in-95"
+                                        >
+                                            <option value="" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Selecciona el subtipo...</option>
+                                            <option value="Distribuidor" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Distribuidor</option>
+                                            <option value="Proveedor" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Proveedor</option>
+                                            <option value="Mayorista" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Mayorista</option>
+                                            <option value="Minorista" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Minorista</option>
+                                            <option value="Cliente final" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Cliente final</option>
+                                        </select>
+                                    </>
+                                )}
+
+                                {tipoClienteNuevo === 'Otro' && (
+                                    <>
+                                        <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Especificar tipo</label>
+                                        <input 
+                                            type="text" 
+                                            name="tipoOtro" 
+                                            placeholder="Especifica el tipo..." 
+                                            className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 animate-in fade-in zoom-in-95" 
+                                        />
+                                    </>
+                                )}
+                            </div>
+
                             <div>
                                 <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Página Web</label>
                                 <input type="text" name="web" placeholder="Ej: www.ecomagic.es" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -108,7 +155,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                 <input type="tel" name="telefono" placeholder="Ej: +34 612 345 678" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                             </div>
 
-                            {/*DATOS DE DIRECCIÓN (FACTURACIÓN) */}
+                            {/* DATOS DE DIRECCIÓN (FACTURACIÓN) */}
                             <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
                                 <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Datos de Facturación</h3>
                             </div>
@@ -152,7 +199,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                 </div>
                             </div>
 
-                            {/* CAMPOS DIRECCIÓN DE ENVÍO (DESPLEGABLE) */}
+                            {/* CAMPOS DIRECCIÓN DE ENVÍO */}
                             {mostrarEnvio && (
                                 <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 mt-2 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-black/20 animate-in fade-in slide-in-from-top-4 duration-300">
                                     <div className="sm:col-span-2">
@@ -178,7 +225,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                 </div>
                             )}
 
-                            {/*DATOS DE CONTACTO ESPECÍFICO */}
+                            {/* DATOS DE CONTACTO ESPECÍFICO */}
                             <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
                                 <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Persona de Contacto</h3>
                             </div>
@@ -205,7 +252,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                 <textarea name="notas" rows={3} placeholder="Añade aquí cualquier nota importante sobre este cliente..." className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5"></textarea>
                             </div>
 
-                            {/*BOTÓN GUARDAR */}
+                            {/* BOTÓN GUARDAR */}
                             <div className="sm:col-span-2 mt-4">
                                 <button type="submit" className="neu-btn neu-focus cursor-pointer w-full rounded-xl py-3 font-medium text-white shadow-lg transition-colors duration-1000 border border-transparent dark:border-white/10" style={{ backgroundColor: 'var(--dynamic-accent)' }}>
                                     Guardar
@@ -234,12 +281,12 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                             }} className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-2">
                                                 <input type="hidden" name="idCliente" value={cliente.id_cliente} />
                                                 
-                                                {/*DATOS PRINCIPALES */}
+                                                {/* DATOS PRINCIPALES */}
                                                 <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2">
                                                     <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Datos Principales</h3>
                                                 </div>
                                                 
-                                                <div className="sm:col-span-2">
+                                                <div>
                                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Nombre Completo / Razón Social *</label>
                                                     <input type="text" name="nombreCompleto" defaultValue={cliente.nombre_completo || ''} required placeholder="Ej: EcoMagic" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
@@ -247,10 +294,56 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">CIF / NIF</label>
                                                     <input type="text" name="cifNif" defaultValue={cliente.cif_nif || ''} placeholder="Ej: B12345678" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
+                                                
                                                 <div>
                                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Tipo de Cliente</label>
-                                                    <input type="text" name="tipoCliente" defaultValue={cliente.tipo_cliente || ''} placeholder="Ej: Mayorista, Particular..." className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                                    <select 
+                                                        name="tipoCliente" 
+                                                        value={tipoClienteEdit}
+                                                        onChange={(e) => setTipoClienteEdit(e.target.value)}
+                                                        className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 cursor-pointer"
+                                                    >
+                                                        <option value="" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Selecciona un tipo...</option>
+                                                        <option value="Particular" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Particular</option>
+                                                        <option value="Empresa" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Empresa</option>
+                                                        <option value="Organismo público" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Organismo público</option>
+                                                        <option value="Otro" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Otro</option>
+                                                    </select>
                                                 </div>
+
+                                                <div>
+                                                    {tipoClienteEdit === 'Empresa' && (
+                                                        <>
+                                                            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Subtipo de Empresa</label>
+                                                            <select 
+                                                                name="subtipoEmpresa" 
+                                                                defaultValue={cliente.subtipo_empresa || ''}
+                                                                className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 cursor-pointer animate-in fade-in zoom-in-95"
+                                                            >
+                                                                <option value="" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Selecciona el subtipo...</option>
+                                                                <option value="Distribuidor" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Distribuidor</option>
+                                                                <option value="Proveedor" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Proveedor</option>
+                                                                <option value="Mayorista" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Mayorista</option>
+                                                                <option value="Minorista" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Minorista</option>
+                                                                <option value="Cliente final" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Cliente final</option>
+                                                            </select>
+                                                        </>
+                                                    )}
+
+                                                    {tipoClienteEdit === 'Otro' && (
+                                                        <>
+                                                            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Especificar tipo</label>
+                                                            <input 
+                                                                type="text" 
+                                                                name="tipoOtro" 
+                                                                defaultValue={cliente.tipo_otro || ''}
+                                                                placeholder="Especifica el tipo..." 
+                                                                className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 animate-in fade-in zoom-in-95" 
+                                                            />
+                                                        </>
+                                                    )}
+                                                </div>
+
                                                 <div>
                                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Página Web</label>
                                                     <input type="text" name="web" defaultValue={cliente.web || ''} placeholder="Ej: www.ecomagic.es" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -264,7 +357,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     <input type="tel" name="telefono" defaultValue={cliente.telefono || ''} placeholder="Ej: +34 612 345 678" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                                 </div>
 
-                                                {/*DATOS DE DIRECCIÓN (FACTURACIÓN) */}
+                                                {/* DATOS DE DIRECCIÓN (FACTURACIÓN) */}
                                                 <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
                                                     <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Datos de Facturación</h3>
                                                 </div>
@@ -307,7 +400,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     </div>
                                                 </div>
 
-                                                {/* CAMPOS DIRECCIÓN DE ENVÍO (DESPLEGABLE) */}
+                                                {/* CAMPOS DIRECCIÓN DE ENVÍO */}
                                                 {mostrarEnvioEdit && (
                                                     <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 mt-2 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-black/20 animate-in fade-in slide-in-from-top-4 duration-300">
                                                         <div className="sm:col-span-2">
@@ -333,7 +426,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     </div>
                                                 )}
 
-                                                {/*DATOS DE CONTACTO ESPECÍFICO */}
+                                                {/* DATOS DE CONTACTO ESPECÍFICO */}
                                                 <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
                                                     <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Persona de Contacto</h3>
                                                 </div>
@@ -364,6 +457,7 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     <button type="button" onClick={() => {
                                                         setEditingId(null)
                                                         setMostrarEnvioEdit(false)
+                                                        setTipoClienteEdit('')
                                                     }} className="neu-btn neu-focus cursor-pointer w-full rounded-xl bg-gray-200 dark:bg-white/10 py-3 font-medium text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-white/20 transition-colors border border-gray-300 dark:border-white/5">
                                                         Cancelar
                                                     </button>
@@ -378,12 +472,16 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                 <div className="flex justify-between items-start border-b border-gray-200 dark:border-white/10 pb-4 mb-4">
                                                     <div>
                                                         <h3 className="text-xl font-bold text-gray-800 dark:text-white">{cliente.nombre_completo}</h3>
-                                                        <p className="text-sm text-gray-500 dark:text-white/60">{cliente.tipo_cliente || 'Sin tipo definido'} • {cliente.cif_nif || 'Sin CIF/NIF'}</p>
+                                                        <p className="text-sm text-gray-500 dark:text-white/60">
+                                                            {cliente.tipo_cliente === 'Empresa' && cliente.subtipo_empresa ? `Empresa - ${cliente.subtipo_empresa}` : 
+                                                             cliente.tipo_cliente === 'Otro' && cliente.tipo_otro ? `Otro: ${cliente.tipo_otro}` :
+                                                             cliente.tipo_cliente || 'Sin tipo definido'} • {cliente.cif_nif || 'Sin CIF/NIF'}
+                                                        </p>
                                                     </div>
                                                     <div className="flex gap-2">
                                                         <button onClick={() => {
                                                             setEditingId(cliente.id_cliente)
-                                                            // Si ya tenía dirección de envío guardada, lo abrimos directamente
+                                                            setTipoClienteEdit(cliente.tipo_cliente || '')
                                                             if (cliente.direccion_envio) setMostrarEnvioEdit(true)
                                                         }} className="neu-btn neu-focus cursor-pointer rounded-lg px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors duration-1000 border border-transparent dark:border-white/10" style={{ backgroundColor: 'var(--dynamic-accent)' }}>
                                                             Editar
@@ -397,7 +495,6 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                     </div>
                                                 </div>
                                                 
-                                                {/* DINÁMICO: Si hay dirección de envío, se divide en 4 columnas (2 en móvil). Si no, en 3. */}
                                                 <div className={`grid grid-cols-1 ${cliente.direccion_envio ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-3'} gap-4 text-sm text-gray-600 dark:text-white/80`}>
                                                     <div>
                                                         <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Contacto Empresa</p>
@@ -406,7 +503,6 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                                                         <p>Web: {cliente.web || '-'}</p>
                                                     </div>
                                                     
-                                                    {/* Esta columna solo sale si hay dirección de envío */}
                                                     {cliente.direccion_envio && (
                                                         <div>
                                                             <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Dirección de Envío</p>

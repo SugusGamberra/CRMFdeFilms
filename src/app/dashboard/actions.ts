@@ -12,16 +12,13 @@ export async function crearCliente(formData: FormData) {
 
     if (!user) return
 
-    // Extracción de campos del formulario
     const nombreCompleto = formData.get('nombreCompleto') as string
 
-    // validación de servidor: sin nombre se para la ejecución y evitamos errores
     if (!nombreCompleto || nombreCompleto.trim() === '') {
         console.error("Error: El nombre completo es obligatorio.")
         return
     }
 
-    // Inserción de datos vinculado al ID de la empresa activa
     await supabase.from('clientes').insert([{
         id_empresa: user.id,
         nombre_completo: nombreCompleto,
@@ -44,9 +41,10 @@ export async function crearCliente(formData: FormData) {
         notas: formData.get('notas') as string,
         web: formData.get('web') as string,
         tipo_cliente: formData.get('tipoCliente') as string,
+        subtipo_empresa: formData.get('subtipoEmpresa') as string,
+        tipo_otro: formData.get('tipoOtro') as string,
     }])
 
-    // Refrescar los datos del servidor para pintar el nuevo cliente
     revalidatePath('/dashboard')
 }
 
@@ -60,7 +58,6 @@ export async function actualizarCliente(formData: FormData) {
     const nombreCompleto = formData.get('nombreCompleto') as string
     if (!nombreCompleto || nombreCompleto.trim() === '') return
 
-    // Actualizar BBDD
     await supabase.from('clientes').update({
         nombre_completo: nombreCompleto,
         cif_nif: formData.get('cifNif') as string,
@@ -82,9 +79,10 @@ export async function actualizarCliente(formData: FormData) {
         notas: formData.get('notas') as string,
         web: formData.get('web') as string,
         tipo_cliente: formData.get('tipoCliente') as string,
+        subtipo_empresa: formData.get('subtipoEmpresa') as string,
+        tipo_otro: formData.get('tipoOtro') as string,
     }).eq('id_cliente', idCliente).eq('id_empresa', user.id)
     
-    // refrescar datos del server
     revalidatePath('/dashboard')
 }
 
@@ -94,18 +92,14 @@ export async function borrarCliente(formData: FormData) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    // Extraccion del ID del cliente a borrar
     const idCliente = formData.get('idCliente') as string
     
-    // borrar datos vinculados al id de la empresa activa
     await supabase.from('clientes').delete().eq('id_cliente', idCliente).eq('id_empresa', user.id)
 
-    //refrescar datos del servidor
     revalidatePath('/dashboard')
 }
 
 // CERRAR SESIÓN (server action)
-// Machaca la sesión en supabase y devuelve al login
 export async function cerrarSesion() {
     const supabase = await createClient()
     await supabase.auth.signOut()
