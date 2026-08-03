@@ -18,6 +18,14 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
         let W: number, H: number, DPR: number, horizonY: number, oceanH: number
         let animationFrameId: number
 
+        let customBgTime: number | null = null
+        const loadCustomBgTime = () => {
+            const stored = localStorage.getItem('neu-ui-bg-time')
+            customBgTime = stored ? parseFloat(stored) : null
+        }
+        loadCustomBgTime()
+        window.addEventListener('bg-time-change', loadCustomBgTime)
+
         const resize = () => {
             DPR = Math.min(window.devicePixelRatio || 1, 2)
             W = window.innerWidth
@@ -30,7 +38,6 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
             horizonY = H * 0.42
             oceanH = H - horizonY
         }
-
         window.addEventListener('resize', resize)
         resize()
 
@@ -71,9 +78,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
             }
         }
 
-        // Función inteligente para calcular un color de acento legible
         const getAccentColor = (P: { skyHor: number[], glow: number[] }) => {
-
             let r = P.skyHor[0] * 0.7 + P.glow[0] * 0.3
             let g = P.skyHor[1] * 0.7 + P.glow[1] * 0.3
             let b = P.skyHor[2] * 0.7 + P.glow[2] * 0.3
@@ -85,15 +90,12 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                 r *= boost
                 g *= boost
                 b *= boost * 1.15
-            } 
-            
-            else if (luminance > 160) {
+            } else if (luminance > 160) {
                 const reduce = 160 / luminance
                 r *= reduce
                 g *= reduce
                 b *= reduce
             }
-
             return [Math.min(255, r), Math.min(255, g), Math.min(255, b)]
         }
 
@@ -126,13 +128,13 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
             
             const now = new Date()
             const timeOfDay = (now.getHours() + now.getMinutes() / 60) / 24
-            const P = getPalette(timeOfDay)
-
-            // inyección de color ajustado en el global
+            const activeTime = customBgTime !== null ? customBgTime : timeOfDay
+            
+            const P = getPalette(activeTime)
             const accentColor = getAccentColor(P)
             document.documentElement.style.setProperty('--dynamic-accent', rgb(accentColor))
 
-            const sunX = W * (0.5 + (timeOfDay - 0.5) * 1.5)
+            const sunX = W * (0.5 + (activeTime - 0.5) * 1.5)
             const sunY = horizonY - P.sunH * horizonY * 0.82
 
             const sky = ctx.createLinearGradient(0, 0, 0, horizonY + oceanH * 0.1)
@@ -216,7 +218,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                 const speed = lerp(0.25, 0.9, depth)
                 const phase = T * speed + i * 0.9
                 const col = lerpRGB(P.wFar, P.wNear, depth)
-
+                
                 ctx.beginPath()
                 ctx.moveTo(0, H)
                 ctx.lineTo(0, yTop + Math.sin(phase) * amp)
@@ -236,6 +238,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                     const y = yTop + Math.sin(x / wlen + phase) * amp + Math.sin(x / (wlen * 0.4) + phase * 1.6) * amp * 0.3
                     started ? ctx.lineTo(x, y) : (ctx.moveTo(x, y), started = true)
                 }
+                
                 const sunCloseness = 1 - Math.min(1, Math.abs(sunX - W * 0.5) / (W * 0.5))
                 ctx.strokeStyle = rgb(lerpRGB(col, P.sun, 0.55), lerp(0.05, 0.3, depth))
                 ctx.stroke()
@@ -262,6 +265,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                 const distFade = 1 - Math.min(1, Math.abs(x - sunX) / (spread + 1))
                 const flick = 0.25 + Math.random() * 0.75
                 const a = distFade * distFade * flick * P.glit * (1 - dy * 0.25)
+                
                 if (a < 0.02) continue
                 ctx.fillStyle = rgb(P.sun, a * 0.85)
                 const len = 1 + Math.random() * (2 + dy * 4)
@@ -281,6 +285,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
 
         return () => {
             window.removeEventListener('resize', resize)
+            window.removeEventListener('bg-time-change', loadCustomBgTime)
             cancelAnimationFrame(animationFrameId)
         }
     }, [])
