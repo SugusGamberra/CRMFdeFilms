@@ -5,10 +5,16 @@ import OceanBackground from '@/components/OceanBackground'
 import UserMenu from '@/components/UserMenu'
 import FormularioCrear from '@/components/clientes/FormularioCrear'
 import ListadoClientes from '@/components/clientes/ListadoClientes'
+import ImportModal from '@/components/clientes/ImportModal'
+import ExportModal from '@/components/clientes/ExportModal'
 import { Cliente } from '@/components/clientes/ClienteItem'
 
 export default function DashboardClient({ clientes, error }: { clientes: Cliente[], error?: string }) {
     const [activeTab, setActiveTab] = useState('lista')
+    const [isImportOpen, setIsImportOpen] = useState(false)
+    
+    // modalMode controla si exportamos todo (plantilla) o el listado a medida
+    const [exportMode, setExportMode] = useState<'full' | 'custom' | null>(null)
 
     return (
         <div className="relative min-h-screen w-full p-4 pt-20 md:p-8 md:pt-24">
@@ -19,7 +25,11 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                 {/* CABECERA */}
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">Gestión de clientes</h1>
-                    <UserMenu />
+                    <UserMenu 
+                        onOpenImport={() => setIsImportOpen(true)}
+                        onOpenExportTemplate={() => setExportMode('full')}
+                        onOpenExportList={() => setExportMode('custom')}
+                    />
                 </div>
 
                 {/* PESTAÑAS */}
@@ -50,6 +60,15 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                     <ListadoClientes clientes={clientes} error={error} />
                 )}
             </div>
+
+            {/* MODALES SUPERPUESTOS */}
+            {isImportOpen && (
+                <ImportModal clientes={clientes} onClose={() => setIsImportOpen(false)} />
+            )}
+            
+            {exportMode && (
+                <ExportModal clientes={clientes} mode={exportMode} onClose={() => setExportMode(null)} />
+            )}
         </div>
     )
 }

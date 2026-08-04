@@ -4,13 +4,15 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { cerrarSesion } from '@/app/dashboard/actions'
 
-export default function UserMenu() {
+interface UserMenuProps {
+    onOpenImport?: () => void
+    onOpenExportTemplate?: () => void
+    onOpenExportList?: () => void
+}
+
+export default function UserMenu({ onOpenImport, onOpenExportTemplate, onOpenExportList }: UserMenuProps) {
     const [isOpen, setIsOpen] = useState(false)
     const menuRef = useRef<HTMLDivElement>(null)
-
-    {/* ESTADOS MODALES (Preparación) */}
-    const [isImportModalOpen, setIsImportModalOpen] = useState(false)
-    const [isExportModalOpen, setIsExportModalOpen] = useState(false)
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -53,19 +55,22 @@ export default function UserMenu() {
                     
                     <div className="h-px bg-gray-200 dark:bg-white/10 my-2 mx-2"></div>
 
-                    {/* CLIENTES */}
-                    <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">Clientes</div>
-                    <button onClick={() => { setIsOpen(false); setIsImportModalOpen(true) }} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
-                        Importar plantilla
-                    </button>
-                    <button onClick={() => { setIsOpen(false); setIsExportModalOpen(true) }} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
-                        Exportar plantilla
-                    </button>
-                    <button onClick={() => { setIsOpen(false); setIsExportModalOpen(true) }} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
-                        Exportar listado
-                    </button>
-
-                    <div className="h-px bg-gray-200 dark:bg-white/10 my-2 mx-2"></div>
+                    {/* CLIENTES - Solo se muestra si estamos en el Dashboard (donde se pasan las funciones) */}
+                    {onOpenImport && onOpenExportTemplate && onOpenExportList && (
+                        <>
+                            <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">Clientes</div>
+                            <button onClick={() => { setIsOpen(false); onOpenImport() }} className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
+                                Importar plantilla
+                            </button>
+                            <button onClick={() => { setIsOpen(false); onOpenExportTemplate() }} className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
+                                Exportar plantilla
+                            </button>
+                            <button onClick={() => { setIsOpen(false); onOpenExportList() }} className="w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
+                                Exportar listado
+                            </button>
+                            <div className="h-px bg-gray-200 dark:bg-white/10 my-2 mx-2"></div>
+                        </>
+                    )}
                     
                     {/* AJUSTES */}
                     <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">Ajustes</div>

@@ -48,7 +48,7 @@ export async function crearCliente(formData: FormData) {
     revalidatePath('/dashboard')
 }
 
-//ACTUALIZAR CLIENTE (server action)
+// ACTUALIZAR CLIENTE (server action)
 export async function actualizarCliente(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -104,4 +104,33 @@ export async function cerrarSesion() {
     const supabase = await createClient()
     await supabase.auth.signOut()
     redirect('/login')
+}
+
+// IMPORTACIÓN MASIVA DE CLIENTES
+export async function importarClientesLote(
+    inserts: Record<string, string>[], 
+    updates: { id: string, data: Record<string, string> }[]
+) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: "No autorizado" }
+
+    try {
+        if (inserts.length > 0) {
+            const insertsWithUser = inserts.map(i => ({ ...i, id_empresa: user.id }))
+            await supabase.from('clientes').insert(insertsWithUser)
+        }
+
+        for (const update of updates) {
+            await supabase.from('clientes').update(update.data).eq('id_cliente', update.id).eq('id_empresa', user.id)
+        }
+
+        revalidatePath('/dashboard')
+        return { success: true }
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return { error: error.message }
+        }
+        return { error: "Error desconocido durante la importación" }
+    }
 }
