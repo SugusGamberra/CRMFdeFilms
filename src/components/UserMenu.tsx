@@ -8,6 +8,10 @@ export default function UserMenu() {
     const [isOpen, setIsOpen] = useState(false)
     const menuRef = useRef<HTMLDivElement>(null)
 
+    {/* ESTADOS MODALES (Preparación) */}
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+    const [isExportModalOpen, setIsExportModalOpen] = useState(false)
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -41,15 +45,29 @@ export default function UserMenu() {
             {isOpen && (
                 <div className="absolute top-14 right-0 w-56 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-gray-200 dark:border-white/10 shadow-2xl p-2 animate-in fade-in zoom-in-95 duration-200">
                     
-                    {/* SECCIÓN PÁGINAS */}
+                    {/* NAVEGACIÓN */}
                     <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">Navegación</div>
                     <Link href="/dashboard" onClick={() => setIsOpen(false)} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
                         Dashboard
                     </Link>
                     
                     <div className="h-px bg-gray-200 dark:bg-white/10 my-2 mx-2"></div>
+
+                    {/* CLIENTES */}
+                    <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">Clientes</div>
+                    <button onClick={() => { setIsOpen(false); setIsImportModalOpen(true) }} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
+                        Importar plantilla
+                    </button>
+                    <button onClick={() => { setIsOpen(false); setIsExportModalOpen(true) }} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
+                        Exportar plantilla
+                    </button>
+                    <button onClick={() => { setIsOpen(false); setIsExportModalOpen(true) }} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
+                        Exportar listado
+                    </button>
+
+                    <div className="h-px bg-gray-200 dark:bg-white/10 my-2 mx-2"></div>
                     
-                    {/* SECCIÓN PERFIL */}
+                    {/* AJUSTES */}
                     <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">Ajustes</div>
                     <Link href="/perfil" onClick={() => setIsOpen(false)} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
                         Configurar Perfil
@@ -57,7 +75,7 @@ export default function UserMenu() {
 
                     <div className="h-px bg-gray-200 dark:bg-white/10 my-2 mx-2"></div>
                     
-                    {/* SECCIÓN LEGAL */}
+                    {/* LEGAL */}
                     <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">Legal</div>
                     <Link href="/privacidad" onClick={() => setIsOpen(false)} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition-colors cursor-pointer">
                         Política de Privacidad
