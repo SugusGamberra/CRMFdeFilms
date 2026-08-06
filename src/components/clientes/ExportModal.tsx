@@ -50,7 +50,6 @@ export default function ExportModal({ clientes, mode, onClose }: ExportModalProp
     const handleExport = () => {
         setIsExporting(true)
         
-        // Simular un pequeño retraso para que se vea la animación si es muy rápido
         setTimeout(() => {
             if (format === 'pdf') {
                 const doc = new jsPDF('landscape')
@@ -205,7 +204,6 @@ export default function ExportModal({ clientes, mode, onClose }: ExportModalProp
         })
     }
 
-    // Comprobadores para ver si todos los campos de una sección están marcados
     const isMainAllChecked = fields.cif && fields.tipo && fields.subtipo && fields.tipoOtro && fields.web && fields.emailEmpresa && fields.telEmpresa
     const isBillingAllChecked = fields.dirFacturacion && fields.locFacturacion && fields.provFacturacion && fields.cpFacturacion && fields.paisFacturacion
     const isShippingAllChecked = fields.dirEnvio && fields.locEnvio && fields.provEnvio && fields.cpEnvio && fields.paisEnvio

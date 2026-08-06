@@ -25,8 +25,6 @@ export default function ImportModal({ clientes, onClose }: ImportModalProps) {
     const [previewRows, setPreviewRows] = useState<PreviewRow[]>([])
     const [isDragging, setIsDragging] = useState(false)
     const [loading, setLoading] = useState(false)
-    
-    // Estados nuevos para la descarga y validación
     const [isDownloading, setIsDownloading] = useState(false)
     const [downloadSuccess, setDownloadSuccess] = useState(false)
 

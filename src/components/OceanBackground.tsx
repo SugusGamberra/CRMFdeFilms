@@ -17,12 +17,13 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
 
         let W: number, H: number, DPR: number, horizonY: number, oceanH: number
         let animationFrameId: number
-
         let customBgTime: number | null = null
+
         const loadCustomBgTime = () => {
             const stored = localStorage.getItem('neu-ui-bg-time')
             customBgTime = stored ? parseFloat(stored) : null
         }
+
         loadCustomBgTime()
         window.addEventListener('bg-time-change', loadCustomBgTime)
 
@@ -82,9 +83,8 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
             let r = P.skyHor[0] * 0.7 + P.glow[0] * 0.3
             let g = P.skyHor[1] * 0.7 + P.glow[1] * 0.3
             let b = P.skyHor[2] * 0.7 + P.glow[2] * 0.3
-
             const luminance = 0.299 * r + 0.587 * g + 0.114 * b
-
+            
             if (luminance < 110) {
                 const boost = 110 / Math.max(luminance, 1)
                 r *= boost
@@ -132,6 +132,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
             
             const P = getPalette(activeTime)
             const accentColor = getAccentColor(P)
+            
             document.documentElement.style.setProperty('--dynamic-accent', rgb(accentColor))
 
             const sunX = W * (0.5 + (activeTime - 0.5) * 1.5)
@@ -293,7 +294,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
     return (
         <canvas 
             ref={canvasRef} 
-            className={`fixed inset-0 w-full h-full -z-10 object-cover transition-all duration-1000 ${blur ? 'blur-md scale-105' : ''}`}
+            className={`fixed inset-0 w-full h-full z-0 pointer-events-none object-cover transition-all duration-1000 ${blur ? 'blur-md scale-105' : ''}`}
         />
     )
 }
