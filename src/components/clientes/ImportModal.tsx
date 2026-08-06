@@ -4,6 +4,7 @@ import { useState } from 'react'
 import * as XLSX from 'xlsx'
 import { importarClientesLote } from '@/app/dashboard/actions'
 import { Cliente } from './ClienteItem'
+import toast from 'react-hot-toast'
 
 interface ImportModalProps {
     clientes: Cliente[]
@@ -24,6 +25,10 @@ export default function ImportModal({ clientes, onClose }: ImportModalProps) {
     const [previewRows, setPreviewRows] = useState<PreviewRow[]>([])
     const [isDragging, setIsDragging] = useState(false)
     const [loading, setLoading] = useState(false)
+    
+    // Estados nuevos para la descarga y validación
+    const [isDownloading, setIsDownloading] = useState(false)
+    const [downloadSuccess, setDownloadSuccess] = useState(false)
 
     // DESCARGAR PLANTILLA
     const descargarPlantilla = () => {
@@ -72,7 +77,28 @@ export default function ImportModal({ clientes, onClose }: ImportModalProps) {
         XLSX.writeFile(wb, "Plantilla_Clientes.xlsx")
     }
 
+    const iniciarDescarga = () => {
+        setIsDownloading(true)
+        setTimeout(() => {
+            descargarPlantilla()
+            setIsDownloading(false)
+            setDownloadSuccess(true)
+            toast.success('Plantilla descargada correctamente')
+            setTimeout(() => setDownloadSuccess(false), 2500)
+        }, 400)
+    }
+
     const procesarArchivo = (file: File) => {
+        // Validación de formato
+        const validExtensions = ['.xlsx', '.xls', '.csv']
+        const isValidExtension = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext))
+        const isValidMime = file.type.includes('excel') || file.type.includes('spreadsheetml') || file.type.includes('csv')
+        
+        if (!isValidExtension && !isValidMime) {
+            toast.error('Tipo de formato de archivo inválido. Por favor, asegúrate de subir un Excel o CSV.')
+            return
+        }
+
         const reader = new FileReader()
         reader.onload = (evt) => {
             const arrayBuffer = evt.target?.result as ArrayBuffer
@@ -83,6 +109,18 @@ export default function ImportModal({ clientes, onClose }: ImportModalProps) {
             const ws = wb.Sheets[wsname]
             
             const data = XLSX.utils.sheet_to_json<Record<string, string | number>>(ws)
+
+            // Validación de plantilla vacía
+            if (!data || data.length === 0) {
+                toast.error('La plantilla está vacía. Recuerda bajar la plantilla base e introducir tus datos.')
+                return
+            }
+
+            // Validación de plantilla incorrecta
+            if (!data[0].hasOwnProperty('Nombre Completo') && !data[0].hasOwnProperty('Nombre')) {
+                toast.error('Formato incorrecto. Por favor, recuerda que debes bajar la plantilla base y hacerlo ahí.')
+                return
+            }
 
             const cleanRows: PreviewRow[] = []
 
@@ -179,9 +217,15 @@ export default function ImportModal({ clientes, onClose }: ImportModalProps) {
             }
         }
 
-        await importarClientesLote(inserts, updates)
+        const result = await importarClientesLote(inserts, updates)
         setLoading(false)
-        onClose()
+        
+        if (result?.error) {
+            toast.error(result.error)
+        } else {
+            toast.success('Listado importado correctamente')
+            onClose()
+        }
     }
 
     const hasDuplicates = previewRows.some(r => r.isDuplicate)
@@ -206,28 +250,53 @@ export default function ImportModal({ clientes, onClose }: ImportModalProps) {
                             <div className="p-4 rounded-2xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 text-sm text-gray-800 dark:text-white/80">
                                 <p className="mb-2"><strong>Instrucciones:</strong> Para que la web reconozca tus datos perfectamente, descarga primero nuestra plantilla base. Hemos dejado las celdas con el ancho perfecto y unas instrucciones claras en una segunda pestaña para guiarte.</p>
                                 <div className="mt-4 flex justify-center">
-                                    <button onClick={descargarPlantilla} className="text-xs font-bold px-6 py-3 rounded-xl shadow-md text-white hover:opacity-80 transition-all cursor-pointer flex items-center gap-2" style={{ backgroundColor: 'var(--dynamic-accent)' }}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
-                                        </svg>
-                                        Descargar Plantilla Base
+                                    <button onClick={iniciarDescarga} disabled={isDownloading} className="neu-btn neu-btn-dynamic neu-focus px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer border border-transparent">
+                                        {isDownloading ? (
+                                            <>
+                                                <span aria-hidden="true">
+                                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                </span>
+                                                <span>Descargando...</span>
+                                            </>
+                                        ) : downloadSuccess ? (
+                                            <>
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                                                <span>Descarga finalizada</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+                                                </svg>
+                                                <span>Descargar Plantilla Base</span>
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                             </div>
 
                             <div 
+                                onClick={() => document.getElementById('file-upload-input')?.click()}
                                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
                                 onDragLeave={() => setIsDragging(false)}
                                 onDrop={onDrop}
-                                className={`w-full p-10 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center transition-all duration-300 ${!isDragging && 'border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5'}`}
+                                className={`w-full p-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all duration-300 cursor-pointer focus:outline-none ${!isDragging ? 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500' : ''}`}
                                 style={isDragging ? { borderColor: 'var(--dynamic-accent)', backgroundColor: 'color-mix(in srgb, var(--dynamic-accent) 15%, transparent)' } : {}}
+                                role="button"
+                                tabIndex={0}
                             >
-                                <svg className="w-12 h-12 mb-4 transition-colors duration-300" style={{ color: isDragging ? 'var(--dynamic-accent)' : '#9ca3af' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                                <p className="text-sm font-medium text-gray-600 dark:text-white/70 mb-2">Arrastra tu archivo Excel aquí o</p>
-                                <label className="text-sm font-bold cursor-pointer hover:underline transition-colors duration-300" style={{ color: 'var(--dynamic-accent)' }}>
-                                    Explora tu equipo
-                                    <input type="file" accept=".xlsx, .xls, .csv" className="hidden" onChange={handleFileInput} />
-                                </label>
+                                <input type="file" id="file-upload-input" accept=".xlsx, .xls, .csv" className="hidden" onChange={handleFileInput} />
+                                <div className="flex flex-col items-center pointer-events-none">
+                                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 neu-raised">
+                                        <svg className="w-8 h-8 transition-colors duration-300" style={{ color: 'var(--dynamic-accent)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Arrastra tu archivo Excel aquí solamente</p>
+                                </div>
                             </div>
                         </div>
                     ) : (
@@ -280,9 +349,17 @@ export default function ImportModal({ clientes, onClose }: ImportModalProps) {
                 {/* PIE Y BOTÓN */}
                 {previewRows.length > 0 && (
                     <div className="pt-6 mt-2 border-t border-gray-200 dark:border-white/10 flex gap-4 shrink-0">
-                        <button onClick={() => setPreviewRows([])} className="w-1/3 py-3 rounded-xl font-bold text-gray-600 dark:text-white/70 bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20 transition-colors cursor-pointer">Atrás</button>
-                        <button onClick={handleImport} disabled={loading} className="w-2/3 py-3 rounded-xl font-bold text-white shadow-lg transition-colors border border-transparent dark:border-white/10 disabled:opacity-50 cursor-pointer" style={{ backgroundColor: 'var(--dynamic-accent)' }}>
-                            {loading ? 'Importando...' : 'Importar Ahora'}
+                        <button onClick={() => setPreviewRows([])} className="neu-btn neu-btn-default neu-focus w-1/3 py-3 rounded-xl font-bold cursor-pointer">Atrás</button>
+                        <button onClick={handleImport} disabled={loading} className="neu-btn neu-btn-dynamic neu-focus w-2/3 py-3 rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer border border-transparent dark:border-white/10">
+                            {loading && (
+                                <span aria-hidden="true">
+                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </span>
+                            )}
+                            <span>{loading ? 'Importando...' : 'Importar Ahora'}</span>
                         </button>
                     </div>
                 )}

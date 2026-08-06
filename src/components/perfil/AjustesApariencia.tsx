@@ -24,8 +24,10 @@ export default function AjustesApariencia() {
             const now = new Date()
             setCurrentTime((now.getHours() + now.getMinutes() / 60) / 24)
         }
+
         updateTime()
         const interval = setInterval(updateTime, 60000)
+
         const timer = setTimeout(() => {
             setTheme(localStorage.getItem('neu-ui-theme') || 'system')
             setBgTime(localStorage.getItem('neu-ui-bg-time') || 'auto')
@@ -101,7 +103,7 @@ export default function AjustesApariencia() {
                     <div className="flex bg-gray-200/50 dark:bg-white/5 p-1 rounded-xl border border-gray-200 dark:border-white/10 transition-colors duration-500 ease-in-out">
                         <button
                             onClick={() => handleThemeChange('light')}
-                            className={`flex flex-1 items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-bold transition-all duration-300 ${theme === 'light' ? 'bg-white text-gray-900 shadow-md scale-105' : 'text-gray-500 hover:text-gray-700 dark:text-white/50 dark:hover:text-white/80'}`}
+                            className={`flex flex-1 items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-bold transition-all duration-300 cursor-pointer ${theme === 'light' ? 'bg-white text-gray-900 shadow-md scale-105' : 'text-gray-500 hover:text-gray-700 dark:text-white/50 dark:hover:text-white/80'}`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
@@ -110,7 +112,7 @@ export default function AjustesApariencia() {
                         </button>
                         <button
                             onClick={() => handleThemeChange('dark')}
-                            className={`flex flex-1 items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-bold transition-all duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white shadow-md scale-105' : 'text-gray-500 hover:text-gray-700 dark:text-white/50 dark:hover:text-white/80'}`}
+                            className={`flex flex-1 items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-bold transition-all duration-300 cursor-pointer ${theme === 'dark' ? 'bg-gray-800 text-white shadow-md scale-105' : 'text-gray-500 hover:text-gray-700 dark:text-white/50 dark:hover:text-white/80'}`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>

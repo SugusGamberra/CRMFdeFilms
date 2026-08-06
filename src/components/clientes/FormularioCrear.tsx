@@ -2,18 +2,32 @@
 
 import { useState } from 'react'
 import { crearCliente } from '@/app/dashboard/actions'
+import toast from 'react-hot-toast'
 
 export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }) {
     const [mostrarEnvio, setMostrarEnvio] = useState(false)
     const [tipoClienteNuevo, setTipoClienteNuevo] = useState('')
+    const [isSaving, setIsSaving] = useState(false)
 
     return (
         <section className="mb-10 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-black/20 p-6 shadow-inner">
-            <form action={async (formData) => {
-                await crearCliente(formData)
-                setMostrarEnvio(false)
-                setTipoClienteNuevo('')
-                onSuccess()
+            <form onSubmit={async (e) => {
+                e.preventDefault()
+                const formData = new FormData(e.currentTarget)
+                
+                setIsSaving(true)
+                const result = await crearCliente(formData)
+                setIsSaving(false)
+                
+                if (result?.error) {
+                    toast.error(result.error)
+                } else {
+                    toast.success('Cliente guardado correctamente')
+                    setMostrarEnvio(false)
+                    setTipoClienteNuevo('')
+                    e.currentTarget.reset()
+                    onSuccess()
+                }
             }} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 
                 {/* DATOS PRINCIPALES */}
@@ -25,6 +39,7 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Nombre Completo / Razón Social *</label>
                     <input type="text" name="nombreCompleto" required placeholder="Ej: EcoMagic" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
+
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">CIF / NIF</label>
                     <input type="text" name="cifNif" placeholder="Ej: B12345678" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -63,7 +78,6 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                             </select>
                         </>
                     )}
-
                     {tipoClienteNuevo === 'Otro' && (
                         <>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Especificar tipo</label>
@@ -81,10 +95,12 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Página Web</label>
                     <input type="text" name="web" placeholder="Ej: www.ecomagic.es" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
+
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Correo Electrónico (Empresa)</label>
                     <input type="email" name="email" placeholder="Ej: contacto@empresa.com" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
+
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Teléfono (Empresa)</label>
                     <input type="tel" name="telefono" placeholder="Ej: +34 612 345 678" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -99,18 +115,22 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Facturación</label>
                     <input type="text" name="direccionFacturacion" placeholder="Ej: Calle Hécate, 1" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
+
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal</label>
                     <input type="text" name="codigoPostal" placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
+
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad (Ciudad)</label>
                     <input type="text" name="localidad" placeholder="Ej: Puerto Real" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
+
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Provincia</label>
                     <input type="text" name="provincia" placeholder="Ej: Cádiz" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
+
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">País</label>
                     <input type="text" name="pais" placeholder="Ej: España" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -141,18 +161,22 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Envío</label>
                             <input type="text" name="direccionEnvio" placeholder="Ej: Calle Artemisa, 2" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
+
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal (Envío)</label>
                             <input type="text" name="codigoPostalEnvio" placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
+
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad (Envío)</label>
                             <input type="text" name="localidadEnvio" placeholder="Ej: Puerto Real" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
+
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Provincia (Envío)</label>
                             <input type="text" name="provinciaEnvio" placeholder="Ej: Cádiz" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
+
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">País (Envío)</label>
                             <input type="text" name="paisEnvio" placeholder="Ej: España" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -169,10 +193,12 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Nombre de la persona</label>
                     <input type="text" name="personaContacto" placeholder="Ej: María García" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
+
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Teléfono directo</label>
                     <input type="tel" name="tfnoContacto" placeholder="Ej: +34 600 000 000" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
+
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Email directo</label>
                     <input type="email" name="emailContacto" placeholder="Ej: maria@empresa.com" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -182,6 +208,7 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                 <div className="sm:col-span-2 border-b border-gray-200 dark:border-white/10 pb-2 mb-2 mt-4">
                     <h3 className="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-white">Notas Adicionales</h3>
                 </div>
+
                 <div className="sm:col-span-2">
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Observaciones (Recargo de equivalencia, exento de IVA, etc.)</label>
                     <textarea name="notas" rows={3} placeholder="Añade aquí cualquier nota importante sobre este cliente..." className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5"></textarea>
@@ -189,8 +216,16 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
 
                 {/* BOTÓN GUARDAR */}
                 <div className="sm:col-span-2 mt-4">
-                    <button type="submit" className="neu-btn neu-focus cursor-pointer w-full rounded-xl py-3 font-medium text-white shadow-lg transition-colors duration-1000 border border-transparent dark:border-white/10" style={{ backgroundColor: 'var(--dynamic-accent)' }}>
-                        Guardar
+                    <button type="submit" disabled={isSaving} className="neu-btn neu-btn-dynamic neu-focus w-full py-3 px-6 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border border-transparent dark:border-white/10 cursor-pointer">
+                        {isSaving && (
+                            <span aria-hidden="true">
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </span>
+                        )}
+                        <span>{isSaving ? 'Guardando...' : 'Guardar'}</span>
                     </button>
                 </div>
             </form>

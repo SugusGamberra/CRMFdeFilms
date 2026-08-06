@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import OceanBackground from '@/components/OceanBackground'
 import UserMenu from '@/components/UserMenu'
 import FormularioCrear from '@/components/clientes/FormularioCrear'
@@ -8,13 +8,18 @@ import ListadoClientes from '@/components/clientes/ListadoClientes'
 import ImportModal from '@/components/clientes/ImportModal'
 import ExportModal from '@/components/clientes/ExportModal'
 import { Cliente } from '@/components/clientes/ClienteItem'
+import toast from 'react-hot-toast'
 
 export default function DashboardClient({ clientes, error }: { clientes: Cliente[], error?: string }) {
     const [activeTab, setActiveTab] = useState('lista')
     const [isImportOpen, setIsImportOpen] = useState(false)
-    
-    // modalMode controla si exportamos todo (plantilla) o el listado a medida
     const [exportMode, setExportMode] = useState<'full' | 'custom' | null>(null)
+
+    useEffect(() => {
+        if (error) {
+            toast.error(`Error al cargar datos: ${error}`)
+        }
+    }, [error])
 
     return (
         <div className="relative min-h-screen w-full p-4 pt-20 md:p-8 md:pt-24">
@@ -27,8 +32,12 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">Gestión de clientes</h1>
                     <UserMenu 
                         onOpenImport={() => setIsImportOpen(true)}
-                        onOpenExportTemplate={() => setExportMode('full')}
-                        onOpenExportList={() => setExportMode('custom')}
+                        onOpenExportTemplate={() => {
+                            setExportMode('full')
+                        }}
+                        onOpenExportList={() => {
+                            setExportMode('custom')
+                        }}
                     />
                 </div>
 
@@ -52,7 +61,10 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
 
                 {/* PESTAÑA ALTA DE CLIENTE */}
                 {activeTab === 'nuevo' && (
-                    <FormularioCrear onSuccess={() => setActiveTab('lista')} />
+                    <FormularioCrear onSuccess={() => {
+                        setActiveTab('lista')
+                        toast.success('Cliente guardado correctamente')
+                    }} />
                 )}
 
                 {/* PESTAÑA LISTADO DE CLIENTES */}

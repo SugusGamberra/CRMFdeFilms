@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import OceanBackground from '@/components/OceanBackground'
+import toast from 'react-hot-toast'
 
 // PAGINA DE LOGIN Y REGISTRO
 // Componente visual y logico para autenticacion y creacion de usuarios en el crm
@@ -15,8 +16,7 @@ export default function LoginPage() {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [mensajeError, setMensajeError] = useState('')
-    const [mensajeExito, setMensajeExito] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
     const router = useRouter()
     const supabase = createClient()
@@ -25,8 +25,7 @@ export default function LoginPage() {
     // Ejecuto la llamada a supabase auth y redirige al dashboard si todo sale bien
     const manejarLogin = async (e: React.FormEvent) => {
         e.preventDefault()
-        setMensajeError('')
-        setMensajeExito('')
+        setIsLoading(true)
 
         if (isLogin) {
             // LOGICA INICIO DE SESIÓN
@@ -36,7 +35,8 @@ export default function LoginPage() {
             })
             
             if (error) {
-                setMensajeError('Credenciales incorrectas. Prueba de nuevo. Si no tienes cuenta regístrate.')
+                toast.error('Credenciales incorrectas. Prueba de nuevo. Si no tienes cuenta regístrate.')
+                setIsLoading(false)
             } else {
                 router.push('/dashboard')
             } 
@@ -48,11 +48,13 @@ export default function LoginPage() {
             })
 
             if (error) {
-                setMensajeError(error.message)
+                toast.error(error.message)
+                setIsLoading(false)
             } else {
-                setMensajeExito('Registro exitoso! Comprueba tu correo electrónico y confirma tu dirección de email.')
+                toast.success('Registro exitoso! Comprueba tu correo electrónico y confirma tu dirección de email.')
                 setIsLogin(true)
                 setPassword('')
+                setIsLoading(false)
             }
         }
     }
@@ -69,7 +71,7 @@ export default function LoginPage() {
             }
         })}
         
-        if (error) setMensajeError(error.message)
+        if (error) toast.error(error.message)
     }
     */
 
@@ -84,18 +86,6 @@ export default function LoginPage() {
                     {isLogin ? 'Acceso CRM' : 'Crear nueva cuenta'}
                 </h1>
                 
-                {/* MENSAJES DE ERROR O ÉXITO */}
-                {mensajeError && (
-                    <div className="mb-6 rounded-xl bg-red-100 dark:bg-red-900/30 p-4 text-sm font-medium text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800/50">
-                        {mensajeError}
-                    </div>
-                )}
-                {mensajeExito && (
-                    <div className="mb-6 rounded-xl bg-green-100 dark:bg-green-900/30 p-4 text-sm font-medium text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800/50">
-                        {mensajeExito}
-                    </div>
-                )}
-
                 <form onSubmit={manejarLogin} className="space-y-5">
 
                     {/*CAMPO EMAIL */}
@@ -109,7 +99,7 @@ export default function LoginPage() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 neu-inset bg-transparent"
+                            className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5"
                             placeholder="empresa@ejemplo.com"
                         />
                     </div>
@@ -125,7 +115,7 @@ export default function LoginPage() {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 neu-inset bg-transparent"
+                            className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5"
                             placeholder="••••••••"
                         />
                     </div>
@@ -133,10 +123,20 @@ export default function LoginPage() {
                     {/*BOTON ENTRAR */}
                     <button
                         type="submit"
-                        className="neu-btn neu-focus mt-8 w-full py-3 px-6 rounded-xl text-sm font-medium text-white shadow-lg cursor-pointer transition-colors duration-1000"
-                        style={{ backgroundColor: 'var(--dynamic-accent)' }}
+                        disabled={isLoading}
+                        className={`neu-btn-dynamic neu-focus mt-8 w-full py-3 px-6 rounded-xl text-sm font-medium flex items-center justify-center gap-2 cursor-pointer ${isLoading ? 'opacity-80' : ''}`}
                     >
-                        {isLogin ? 'Entrar' : 'Registrarse'}
+                        {isLoading && (
+                            <span id="loading-spinner" aria-hidden="true">
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </span>
+                        )}
+                        <span id="loading-text">
+                            {isLoading ? (isLogin ? 'Iniciando sesión...' : 'Registrando...') : (isLogin ? 'Entrar' : 'Registrarse')}
+                        </span>
                     </button>
                 </form>
 
@@ -171,8 +171,6 @@ export default function LoginPage() {
                     <button
                         onClick={() => {
                             setIsLogin(!isLogin)
-                            setMensajeError('')
-                            setMensajeExito('')
                         }}
                         className="font-semibold transition-colors outline-none focus:outline-none hover:underline focus:underline cursor-pointer duration-1000"
                         style={{ color: 'var(--dynamic-accent)' }}
