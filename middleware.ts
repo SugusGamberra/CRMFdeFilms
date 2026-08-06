@@ -29,13 +29,26 @@ export async function middleware(request: NextRequest) {
         }
     )
 
-    // Obtención de usuario actual
+    // Obtención de usuario actual (validado en el servidor de Supabase)
     const { data: { user } } = await supabase.auth.getUser()
 
     // PROTECCIÓN DE RUTAS
-    if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+    
+    // Si se crean más rutas AÑADELAS AQUI!! toda ruta nueva que sea privada debe ir aqui
+    const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard') || 
+                            request.nextUrl.pathname.startsWith('/perfil');
+                            
+    const isAuthRoute = request.nextUrl.pathname.startsWith('/login');
+
+    if (!user && isProtectedRoute) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
+        return NextResponse.redirect(url)
+    }
+
+    if (user && isAuthRoute) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
         return NextResponse.redirect(url)
     }
 
