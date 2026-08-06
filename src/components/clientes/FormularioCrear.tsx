@@ -13,7 +13,8 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
         <section className="mb-10 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-black/20 p-6 shadow-inner">
             <form onSubmit={async (e) => {
                 e.preventDefault()
-                const formData = new FormData(e.currentTarget)
+                const form = e.currentTarget
+                const formData = new FormData(form)
                 
                 setIsSaving(true)
                 const result = await crearCliente(formData)
@@ -25,7 +26,7 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                     toast.success('Cliente guardado correctamente')
                     setMostrarEnvio(false)
                     setTipoClienteNuevo('')
-                    e.currentTarget.reset()
+                    form.reset()
                     onSuccess()
                 }
             }} className="grid grid-cols-1 gap-4 sm:grid-cols-2">

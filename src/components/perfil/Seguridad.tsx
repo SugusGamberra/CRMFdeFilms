@@ -10,9 +10,10 @@ export default function Seguridad() {
 
     const handleActualizarPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        const form = e.currentTarget
+        const formData = new FormData(form)
+
         setIsUpdating(true)
-        const formData = new FormData(e.currentTarget)
-        
         const res = await actualizarPassword(formData)
         setIsUpdating(false)
         
@@ -21,7 +22,7 @@ export default function Seguridad() {
         }
         if (res.exito) {
             toast.success(res.exito)
-            e.currentTarget.reset()
+            form.reset()
             setIsUpdated(true)
             setTimeout(() => setIsUpdated(false), 2500)
         }
