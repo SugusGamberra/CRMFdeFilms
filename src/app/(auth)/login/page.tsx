@@ -76,7 +76,7 @@ export default function LoginPage() {
     */
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center p-4 overflow-hidden">
+        <main className="relative flex min-h-screen items-center justify-center p-4 overflow-hidden">
             <OceanBackground />
             
             <div className="relative z-10 w-full max-w-md rounded-3xl p-10 neu-raised bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
@@ -180,6 +180,6 @@ export default function LoginPage() {
                 </div>
                 
             </div>
-        </div>
+        </main>
     )
 }
