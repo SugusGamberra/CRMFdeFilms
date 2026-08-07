@@ -6,6 +6,16 @@ interface OceanBackgroundProps {
     blur?: boolean
 }
 
+// calculo luna segun fecha actual
+const getMoonPhase = (date: Date) => {
+    // luna nueva de referencia
+    const knownNewMoon = new Date('2026-07-14T10:45:00Z').getTime()
+    const lunarCycle = 29.53058770576 * 24 * 60 * 60 * 1000 // duracion exacta en milisegundos
+    const diff = date.getTime() - knownNewMoon
+    const phase = (diff % lunarCycle) / lunarCycle
+    return phase < 0 ? phase + 1 : phase
+}
+
 export default function OceanBackground({ blur = false }: OceanBackgroundProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -135,9 +145,26 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
             
             document.documentElement.style.setProperty('--dynamic-accent', rgb(accentColor))
 
-            const sunX = W * (0.5 + (activeTime - 0.5) * 1.5)
-            const sunY = horizonY - P.sunH * horizonY * 0.82
+            const theta = (activeTime - 0.25) * 2 * Math.PI
+            
+            const celestialR = Math.min(W, H) * 0.045
 
+            // SOL
+            const sunX = W / 2 - Math.cos(theta) * (W * 0.42)
+            const sunY = horizonY - Math.sin(theta) * (horizonY * 0.85)
+            const sunVisible = Math.sin(theta) > -0.2
+
+            // LUNA
+            const moonTheta = theta + Math.PI
+            const moonX = W / 2 - Math.cos(moonTheta) * (W * 0.42)
+            const moonY = horizonY - Math.sin(moonTheta) * (horizonY * 0.85)
+            const moonVisible = Math.sin(moonTheta) > -0.2
+
+            const isDay = Math.sin(theta) > Math.sin(moonTheta)
+            const glowX = isDay ? sunX : moonX
+            const glowY = isDay ? sunY : moonY
+
+            // CIELO
             const sky = ctx.createLinearGradient(0, 0, 0, horizonY + oceanH * 0.1)
             sky.addColorStop(0, rgb(P.skyTop))
             sky.addColorStop(0.7, rgb(lerpRGB(P.skyTop, P.skyHor, 0.55)))
@@ -145,6 +172,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
             ctx.fillStyle = sky
             ctx.fillRect(0, 0, W, horizonY + 2)
 
+            // ESTRELLAS
             if (P.star > 0.01) {
                 stars.forEach((s) => {
                     const tw = 0.5 + 0.5 * Math.sin(T * 2 + s.tw)
@@ -155,24 +183,66 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                 })
             }
 
+            // GLOW
             const glowR = Math.min(W, H) * 0.5
-            const g = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, glowR)
+            const g = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, glowR)
             g.addColorStop(0, rgb(P.glow, 0.55))
             g.addColorStop(0.25, rgb(P.glow, 0.22))
             g.addColorStop(1, rgb(P.glow, 0))
             ctx.fillStyle = g
             ctx.fillRect(0, 0, W, horizonY + oceanH * 0.4)
 
-            const sunR = Math.min(W, H) * 0.045
-            const sd = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunR)
-            sd.addColorStop(0, rgb(P.sun, 1))
-            sd.addColorStop(0.7, rgb(P.sun, 0.95))
-            sd.addColorStop(1, rgb(P.sun, 0.2))
-            ctx.fillStyle = sd
-            ctx.beginPath()
-            ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2)
-            ctx.fill()
+            // EL SOL
+            if (sunVisible) {
+                const sd = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, celestialR)
+                sd.addColorStop(0, rgb(P.sun, 1))
+                sd.addColorStop(0.7, rgb(P.sun, 0.95))
+                sd.addColorStop(1, rgb(P.sun, 0.2))
+                ctx.fillStyle = sd
+                ctx.beginPath()
+                ctx.arc(sunX, sunY, celestialR, 0, Math.PI * 2)
+                ctx.fill()
+            }
 
+            // LA LUNA Y SUS FASES
+            if (moonVisible) {
+                const phase = getMoonPhase(now)
+                
+                ctx.save()
+                ctx.translate(moonX, moonY)
+
+                ctx.fillStyle = rgb(P.skyTop, 0.4)
+                ctx.beginPath()
+                ctx.arc(0, 0, celestialR * 0.9, 0, Math.PI * 2)
+                ctx.fill()
+
+                ctx.fillStyle = '#FDFDFF'
+                ctx.beginPath()
+                
+                if (phase < 0.5) {
+                    ctx.arc(0, 0, celestialR * 0.9, Math.PI / 2, Math.PI * 1.5, true) 
+                } else {
+                    ctx.arc(0, 0, celestialR * 0.9, Math.PI / 2, Math.PI * 1.5, false)
+                }
+
+                const stretch = Math.cos(phase * Math.PI * 2)
+                const isWaxing = phase < 0.5
+                const isCurveFlipped = stretch < 0
+                ctx.ellipse(0, 0, celestialR * 0.9 * Math.abs(stretch), celestialR * 0.9, 0, Math.PI / 2, Math.PI * 1.5, isCurveFlipped ? isWaxing : !isWaxing)
+                
+                ctx.fill()
+                ctx.restore()
+
+                const md = ctx.createRadialGradient(moonX, moonY, celestialR * 0.8, moonX, moonY, celestialR * 2.5)
+                md.addColorStop(0, rgb([255, 255, 255], 0.15))
+                md.addColorStop(1, rgb([255, 255, 255], 0))
+                ctx.fillStyle = md
+                ctx.beginPath()
+                ctx.arc(moonX, moonY, celestialR * 2.5, 0, Math.PI * 2)
+                ctx.fill()
+            }
+
+            // NUBES Y PÁJAROS
             clouds.forEach((c) => {
                 c.x += c.speed
                 if (c.x > 1.3) c.x = -0.3
@@ -203,6 +273,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                 ctx.stroke()
             })
 
+            // OCÉANO Y REFLEJOS
             const haze = ctx.createLinearGradient(0, horizonY - 40, 0, horizonY + 40)
             haze.addColorStop(0, rgb(P.skyHor, 0))
             haze.addColorStop(0.5, rgb(P.skyHor, 0.45))
@@ -240,7 +311,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                     started ? ctx.lineTo(x, y) : (ctx.moveTo(x, y), started = true)
                 }
                 
-                const sunCloseness = 1 - Math.min(1, Math.abs(sunX - W * 0.5) / (W * 0.5))
+                // Reflejo en el agua
                 ctx.strokeStyle = rgb(lerpRGB(col, P.sun, 0.55), lerp(0.05, 0.3, depth))
                 ctx.stroke()
 
@@ -257,13 +328,14 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                 }
             }
 
+            // Purpurina/reflejo (glitter)
             const glitterCount = 220
             for (let i = 0; i < glitterCount; i++) {
                 const dy = Math.random()
                 const y = horizonY + Math.pow(dy, 1.5) * oceanH
                 const spread = lerp(6, W * 0.3, dy)
-                const x = sunX + (Math.random() - 0.5) * 2 * spread
-                const distFade = 1 - Math.min(1, Math.abs(x - sunX) / (spread + 1))
+                const x = glowX + (Math.random() - 0.5) * 2 * spread
+                const distFade = 1 - Math.min(1, Math.abs(x - glowX) / (spread + 1))
                 const flick = 0.25 + Math.random() * 0.75
                 const a = distFade * distFade * flick * P.glit * (1 - dy * 0.25)
                 
