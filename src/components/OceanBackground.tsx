@@ -192,7 +192,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
             ctx.fillStyle = g
             ctx.fillRect(0, 0, W, horizonY + oceanH * 0.4)
 
-            // EL SOL
+            // SOL
             if (sunVisible) {
                 const sd = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, celestialR)
                 sd.addColorStop(0, rgb(P.sun, 1))
@@ -308,7 +308,12 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                 let started = false
                 for (let x = 0; x <= W; x += 6) {
                     const y = yTop + Math.sin(x / wlen + phase) * amp + Math.sin(x / (wlen * 0.4) + phase * 1.6) * amp * 0.3
-                    started ? ctx.lineTo(x, y) : (ctx.moveTo(x, y), started = true)
+                    if (started) {
+                        ctx.lineTo(x, y)
+                    } else {
+                        ctx.moveTo(x, y)
+                        started = true
+                    }
                 }
                 
                 // Reflejo en el agua
@@ -322,7 +327,9 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                         const crest = Math.sin(x / wlen + phase)
                         if (crest > 0.55 && Math.random() > 0.45) {
                             ctx.fillStyle = rgb(P.foam, foamA * (0.18 + Math.random() * 0.35))
-                            ctx.fillRect(x + (Math.random() - 0.5) * 6, y - Math.random() * 3, 1.5 + Math.random() * 3, 1.5 + Math.random() * 2)
+                            ctx.beginPath()
+                            ctx.arc(x + (Math.random() - 0.5) * 6, y - Math.random() * 3, 1 + Math.random() * 1.5, 0, Math.PI * 2)
+                            ctx.fill()
                         }
                     }
                 }
@@ -342,7 +349,10 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
                 if (a < 0.02) continue
                 ctx.fillStyle = rgb(P.sun, a * 0.85)
                 const len = 1 + Math.random() * (2 + dy * 4)
-                ctx.fillRect(x, y, len, 1 + dy)
+                
+                ctx.beginPath()
+                ctx.ellipse(x, y, len, 0.8 + dy * 0.5, 0, 0, Math.PI * 2)
+                ctx.fill()
             }
 
             const vig = ctx.createRadialGradient(W / 2, H * 0.55, H * 0.25, W / 2, H * 0.55, H * 0.9)
