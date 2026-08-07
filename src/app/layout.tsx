@@ -9,8 +9,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CRM EcoMagic",
+  title: "CRM FdeFilms",
   description: "Plataforma de gestión de clientes",
+  icons: {
+    icon: [
+      { url: '/favicon-light.ico', media: '(prefers-color-scheme: light)' },
+      { url: '/favicon-dark.ico', media: '(prefers-color-scheme: dark)' }
+    ]
+  }
 };
 
 export default function RootLayout({

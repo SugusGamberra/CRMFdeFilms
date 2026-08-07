@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import OceanBackground from '@/components/OceanBackground'
 import toast from 'react-hot-toast'
+import Image from 'next/image'
 
 // PAGINA DE LOGIN Y REGISTRO
 // Componente visual y logico para autenticacion y creacion de usuarios en el crm
@@ -13,7 +14,6 @@ export default function LoginPage() {
     // ESTADOS
     // control de interfaz y datos d usuario (true login false registro)
     const [isLogin, setIsLogin] = useState(true)
-
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
@@ -61,7 +61,6 @@ export default function LoginPage() {
     
     // LOGICA DE GOOGLE AUTH
     // De cara al futuro, esto necesita las claves de Google Cloud, sencillamente descomenta esto y el boton que he puesto más abajo
-
     /*
     const logingConGoogle = async () => {
         const { error } = await supabase.auth.signInWithOAuth({
@@ -69,11 +68,11 @@ export default function LoginPage() {
             options: {
                 redirectTo: `${window.location.origin}/auth/callback`,
             }
-        })}
+        })
         
         if (error) toast.error(error.message)
     }
-    */
+     */
 
     return (
         <main className="relative flex min-h-screen items-center justify-center p-4 overflow-hidden">
@@ -81,13 +80,15 @@ export default function LoginPage() {
             
             <div className="relative z-10 w-full max-w-md rounded-3xl p-10 neu-raised bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
                 
-                {/* TÍTULO DINÁMICO */}
-                <h1 className="mb-8 text-center text-3xl font-semibold tracking-tight text-gray-800 dark:text-gray-100">
-                    {isLogin ? 'Acceso CRM' : 'Crear nueva cuenta'}
-                </h1>
+                {/* TÍTULO DINÁMICO Y LOGO */}
+                <div className="flex flex-col items-center mb-8">
+                    <Image src="/logo-blanco.png" alt="EcoMagic Logo" width={200} height={64} priority className="h-14 md:h-16 w-auto object-contain transition-all duration-500 mb-4"/>
+                    <h1 className="text-center text-3xl font-semibold tracking-tight text-gray-800 dark:text-gray-100">
+                        {isLogin ? 'Acceso CRM' : 'Crear nueva cuenta'}
+                    </h1>
+                </div>
                 
                 <form onSubmit={manejarLogin} className="space-y-5">
-
                     {/*CAMPO EMAIL */}
                     <div>
                         <label className="mb-1.5 block text-sm font-medium text-gray-600 dark:text-gray-300" htmlFor="email">
@@ -141,14 +142,13 @@ export default function LoginPage() {
                 </form>
 
                 {/*BOTÓN DE GOOGLE, descomentar cuando se configure google cloud */}
-                {/*
+                { /* 
                 <div className="mt-6">
                     <div className="relative flex items-center py-5">
                         <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
                         <span className="flex-shrink-0 px-4 text-sm text-gray-500 dark:text-gray-400">O continúa con</span>
                         <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
                     </div>
-
                     <button
                         onClick={logingConGoogle}
                         type="button"
