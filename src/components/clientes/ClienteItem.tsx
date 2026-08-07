@@ -158,7 +158,16 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
 
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal</label>
-                            <input type="text" name="codigoPostal" defaultValue={cliente.codigo_postal || ''} placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                            <input 
+                                type="text" 
+                                name="codigoPostal" 
+                                defaultValue={cliente.codigo_postal || ''} 
+                                placeholder="Ej: 11111" 
+                                inputMode="numeric"
+                                maxLength={5}
+                                onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }}
+                                className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" 
+                            />
                         </div>
 
                         <div>
@@ -204,7 +213,16 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
 
                                 <div>
                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal (Envío)</label>
-                                    <input type="text" name="codigoPostalEnvio" defaultValue={cliente.codigo_postal_envio || ''} placeholder="Ej: 11111" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
+                                    <input 
+                                        type="text" 
+                                        name="codigoPostalEnvio" 
+                                        defaultValue={cliente.codigo_postal_envio || ''} 
+                                        placeholder="Ej: 11111" 
+                                        inputMode="numeric"
+                                        maxLength={5}
+                                        onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '') }}
+                                        className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" 
+                                    />
                                 </div>
 
                                 <div>
