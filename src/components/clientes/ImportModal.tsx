@@ -102,71 +102,77 @@ export default function ImportModal({ clientes, onClose }: ImportModalProps) {
             const arrayBuffer = evt.target?.result as ArrayBuffer
             if (!arrayBuffer) return
             
-            const wb = XLSX.read(arrayBuffer, { type: 'array' })
-            const wsname = wb.SheetNames[0]
-            const ws = wb.Sheets[wsname]
-            
-            const data = XLSX.utils.sheet_to_json<Record<string, string | number>>(ws)
+            try {
+                const wb = XLSX.read(arrayBuffer, { type: 'array' })
+                const wsname = wb.SheetNames[0]
+                const ws = wb.Sheets[wsname]
+                
+                const data = XLSX.utils.sheet_to_json<Record<string, string | number>>(ws)
 
-            // Validación de plantilla vacía
-            if (!data || data.length === 0) {
-                toast.error('La plantilla está vacía. Recuerda bajar la plantilla base e introducir tus datos.')
-                return
-            }
-
-            // Validación de plantilla incorrecta
-            if (!data[0].hasOwnProperty('Nombre Completo') && !data[0].hasOwnProperty('Nombre')) {
-                toast.error('Formato incorrecto. Por favor, recuerda que debes bajar la plantilla base y hacerlo ahí.')
-                return
-            }
-
-            const cleanRows: PreviewRow[] = []
-
-            data.forEach((row, index) => {
-                const mappedData: Partial<Cliente> = {
-                    nombre_completo: String(row['Nombre Completo'] || row['Nombre'] || ''),
-                    cif_nif: String(row['CIF / NIF'] || row['CIF'] || row['NIF'] || ''),
-                    tipo_cliente: String(row['Tipo de Cliente'] || ''),
-                    subtipo_empresa: String(row['Subtipo Empresa'] || ''),
-                    tipo_otro: String(row['Otro Tipo'] || ''),
-                    email: String(row['Email'] || ''),
-                    telefono: String(row['Teléfono'] || row['Telefono'] || ''),
-                    web: String(row['Web'] || ''),
-                    direccion_facturacion: String(row['Dirección Facturación'] || row['Direccion'] || ''),
-                    localidad: String(row['Localidad'] || ''),
-                    provincia: String(row['Provincia'] || ''),
-                    codigo_postal: String(row['Código Postal'] || row['CP'] || ''),
-                    pais: String(row['País'] || row['Pais'] || ''),
-                    persona_contacto: String(row['Nombre Contacto'] || row['Contacto'] || ''),
-                    tfno_contacto: String(row['Teléfono Contacto'] || ''),
-                    email_contacto: String(row['Email Contacto'] || ''),
-                    direccion_envio: String(row['Dirección Envío'] || ''),
-                    localidad_envio: String(row['Localidad Envío'] || ''),
-                    provincia_envio: String(row['Provincia Envío'] || ''),
-                    codigo_postal_envio: String(row['Código Postal Envío'] || ''),
-                    pais_envio: String(row['País Envío'] || ''),
-                    notas: String(row['Notas'] || '')
-                }
-
-                if (mappedData.nombre_completo === 'Ejemplo: Borrar esta fila' || mappedData.nombre_completo === '') {
+                // Validación de plantilla vacía
+                if (!data || data.length === 0) {
+                    toast.error('La plantilla está vacía. Recuerda bajar la plantilla base e introducir tus datos.')
                     return
                 }
 
-                const existing = clientes.find(c => 
-                    (mappedData.cif_nif && c.cif_nif === mappedData.cif_nif) || 
-                    (mappedData.nombre_completo && c.nombre_completo.toLowerCase() === mappedData.nombre_completo.toLowerCase())
-                )
+                // Validación de plantilla incorrecta
+                if (!data[0].hasOwnProperty('Nombre Completo') && !data[0].hasOwnProperty('Nombre')) {
+                    toast.error('Formato incorrecto. Por favor, recuerda que debes bajar la plantilla base y hacerlo ahí.')
+                    return
+                }
 
-                cleanRows.push({
-                    id: index,
-                    data: mappedData,
-                    isDuplicate: !!existing,
-                    existingCliente: existing,
-                    action: existing ? 'ignorar' : 'crear'
+                const cleanRows: PreviewRow[] = []
+
+                data.forEach((row, index) => {
+                    const mappedData: Partial<Cliente> = {
+                        nombre_completo: String(row['Nombre Completo'] || row['Nombre'] || ''),
+                        cif_nif: String(row['CIF / NIF'] || row['CIF'] || row['NIF'] || ''),
+                        tipo_cliente: String(row['Tipo de Cliente'] || ''),
+                        subtipo_empresa: String(row['Subtipo Empresa'] || ''),
+                        tipo_otro: String(row['Otro Tipo'] || ''),
+                        email: String(row['Email'] || ''),
+                        telefono: String(row['Teléfono'] || row['Telefono'] || ''),
+                        web: String(row['Web'] || ''),
+                        direccion_facturacion: String(row['Dirección Facturación'] || row['Direccion'] || ''),
+                        localidad: String(row['Localidad'] || ''),
+                        provincia: String(row['Provincia'] || ''),
+                        codigo_postal: String(row['Código Postal'] || row['CP'] || ''),
+                        pais: String(row['País'] || row['Pais'] || ''),
+                        persona_contacto: String(row['Nombre Contacto'] || row['Contacto'] || ''),
+                        tfno_contacto: String(row['Teléfono Contacto'] || ''),
+                        email_contacto: String(row['Email Contacto'] || ''),
+                        direccion_envio: String(row['Dirección Envío'] || ''),
+                        localidad_envio: String(row['Localidad Envío'] || ''),
+                        provincia_envio: String(row['Provincia Envío'] || ''),
+                        codigo_postal_envio: String(row['Código Postal Envío'] || ''),
+                        pais_envio: String(row['País Envío'] || ''),
+                        notas: String(row['Notas'] || '')
+                    }
+
+                    if (mappedData.nombre_completo === 'Ejemplo: Borrar esta fila' || mappedData.nombre_completo === '') {
+                        return
+                    }
+
+                    const existing = clientes.find(c => 
+                        (mappedData.cif_nif && c.cif_nif === mappedData.cif_nif) || 
+                        (mappedData.nombre_completo && c.nombre_completo.toLowerCase() === mappedData.nombre_completo.toLowerCase())
+                    )
+
+                    cleanRows.push({
+                        id: index,
+                        data: mappedData,
+                        isDuplicate: !!existing,
+                        existingCliente: existing,
+                        action: existing ? 'ignorar' : 'crear'
+                    })
                 })
-            })
-            
-            setPreviewRows(cleanRows)
+                
+                setPreviewRows(cleanRows)
+                
+            } catch (error) {
+                console.error("Error al leer el archivo Excel:", error)
+                toast.error('El archivo está corrupto o es ilegible. Por favor, revisa que sea la plantilla correcta y que no esté dañada o vacía.')
+            }
         }
         
         reader.readAsArrayBuffer(file)
