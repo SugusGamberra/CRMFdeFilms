@@ -138,4 +138,6 @@ git push origin feature
 
 Proyecto estructurado, desarrollado y diseñado por **Patricia García López** aka la Sugus: [![Perfil de GitHub](https://img.shields.io/badge/GitHub-SugusGamberra-181717?logo=github&style=for-the-badge)](https://github.com/SugusGamberra)
 
-[![Contribuidores](https://contrib.rocks/image?repo=EcoMagic/BBDD)](https://github.com/EcoMagic/BBDD/graphs/contributors)
+<a href = "https://github.com/EcoMagic/BBDD/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=EcoMagic/BBDD"/>
+</a>
