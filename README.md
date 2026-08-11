@@ -47,6 +47,7 @@ Destaca por tener una interfaz limpia basada en el diseño Neumórfico (*Neumorp
 │   ├── app/
 │   │   ├── (auth)/
 │   │   │   └── login/
+│   │   │   │   └── page.tsx
 │   │   ├── avisos/
 │   │   │   └── page.tsx
 │   │   ├── cookies/
