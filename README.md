@@ -30,6 +30,78 @@ Destaca por tener una interfaz limpia basada en el diseño Neumórfico (*Neumorp
 * **Backend y base de datos**: Supabase (PostgreSQL y Autenticación)
 * **Utilidades extra**: `xlsx` (para lectura y generación de excels), `jspdf` y `jspdf-autotable` (para generacion de documentos PDF), `react-hot-toast` (para notificaciones visuales).
 
+## Estructura del repo
+
+.
+├── public/
+│   ├── favicon-dark.ico
+│   ├── favicon-light.ico
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── logo-blanco.png
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── src/
+│   ├── app/
+│   │   ├── (auth)/
+│   │   │   └── login/
+│   │   ├── avisos/
+│   │   │   └── page.tsx
+│   │   ├── cookies/
+│   │   │   └── page.tsx
+│   │   ├── dashboard/
+│   │   │   ├── actions.ts
+│   │   │   ├── DashboardClient.tsx
+│   │   │   ├── loading.tsx
+│   │   │   └── page.tsx
+│   │   ├── perfil/
+│   │   │   ├── actions.ts
+│   │   │   ├── page.tsx
+│   │   │   └── PerfilClient.tsx
+│   │   ├── privacidad/
+│   │   │   └── page.tsx
+│   │   ├── secreto/
+│   │   │   └── page.tsx
+│   │   ├── error.tsx
+│   │   ├── global.css
+│   │   ├── layout.tsx
+│   │   ├── middleware.ts
+│   │   ├── not-found.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── clientes/
+│   │   │   ├── BuscadorFiltros.tsx
+│   │   │   ├── ClienteItem.tsx
+│   │   │   ├── ExportModal.tsx
+│   │   │   ├── FormularioCrear.tsx
+│   │   │   ├── ImportModal.tsx
+│   │   │   └── ListadoClientes.tsx
+│   │   ├── perfil/
+│   │   │   ├── AjustesApariencia.tsx
+│   │   │   ├── DatosBasicos.tsx
+│   │   │   └── Seguridad.tsx
+│   │   ├── OceanBackground.tsx
+│   │   └── UserMenu.tsx
+│   └── lib/
+│       └── supabase/
+│           ├── client.ts
+│           └── server.ts
+├── tests/
+│   ├── crm.spec.ts
+│   └── login.spec.ts
+├── CLAUDE.md
+├── eslint.config.mjs
+├── next-env.d.ts
+├── next.config.ts
+├── package.json
+├── package-lock.json
+├── playwright.config.ts
+├── postcss.config.mjs
+├── README.md
+├── tailwind.config.ts
+└── tsconfig.json
+
 ---
 
 ## Guía dev
@@ -131,6 +203,44 @@ git push origin feature
 ```
 
 5. **Fusionar con la rama `main` (PR)**: Ve al github del proyecto y crea un *Pull Request* solicitando unir tu rama hacia `main`. Una vez se revise tu código y se apruebe, se fusionará y estará listo para produ!
+
+---
+
+## Pruebas automatizadas
+
+El proyecto cuenta con una suite de pruebas **E2E** desarrolladas con *Playwright*. Estas pruebas simulan la navegacion y las acciones de un usuario real en el navegador para verificar que los flujos criticos de la aplicacion funcionan correctamente antes de desplegar a produccion.
+
+### Comandos para ejecutar los tests
+
+1. **Ejecutar todos los tests en segundo plano (headless)**: 
+
+```bash
+npx playwright test
+```
+
+2. **Ejectura tests con interfaz gráfica (Playwright UI Mode)**: Perfe para depurar y ver paso a paso como interactúa el navegador con la app
+
+```bash
+npx playwright test --ui
+```
+
+3. **Ejecutar los tests viendo el navegador en vivo (headed mode)**:
+
+```bash
+npx playwright test --headed
+```
+
+4. **Ver el informe de resultados (Playwright HTML report)**: Si algo falla o quieres ver detalles
+
+```bash
+npx playwright show-report
+```
+
+### Estructura de las pruebas
+
+* `tests/`: Aquí residen los archivos de pruebas (`.spec.ts`)
+* `playwright.config.ts`: Archivo de config global (navegadores, URLs base y timeouts)
+* `playwright-report/`: Carpeta generada automáticamente con el informe visual de los resultados (se ignora en git)
 
 ---
 
