@@ -32,6 +32,7 @@ Destaca por tener una interfaz limpia basada en el diseño Neumórfico (*Neumorp
 
 ## Estructura del repo
 
+```text
 .
 ├── public/
 │   ├── favicon-dark.ico
@@ -101,6 +102,7 @@ Destaca por tener una interfaz limpia basada en el diseño Neumórfico (*Neumorp
 ├── README.md
 ├── tailwind.config.ts
 └── tsconfig.json
+```
 
 ---
 
