@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./global.css";
+import CookieBlocker from "@/components/CookieBlocker";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -44,6 +45,8 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} font-sans min-h-full flex flex-col antialiased text-slate-700 dark:text-slate-200 transition-colors duration-500 ease-in-out`}>
+        <CookieBlocker />
+        
         {children}
         
         <Toaster 
