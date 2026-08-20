@@ -1,20 +1,21 @@
 import { createClient } from '@/lib/supabase/server'
 import DashboardClient from './DashboardClient'
 
-// PANEL PRINCIPAL (DASHBOARD)
+// dashboard que comprueba si el user es admin y obtiene la lista de cls
 
 export default async function DashboardPage() {
-    // Inicialización de conexion segura desde el servidor
     const supabase = await createClient()
-
-    // OBTENER LISTA DE CLIENTES
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(email => email.trim().toLowerCase()) || []
+    const isAdmin = user?.email ? adminEmails.includes(user.email.toLowerCase()) : false
+    
     const { data: clientes, error } = await supabase
         .from('clientes')
         .select('*')
         .order('created_at', { ascending: false })
-
-    // El componente de cliente maneja las pestañas, se le pasan los datos a el
+        
     return (
-        <DashboardClient clientes={clientes || []} error={error?.message} />
+        <DashboardClient clientes={clientes || []} error={error?.message} isAdmin={isAdmin} />
     )
 }

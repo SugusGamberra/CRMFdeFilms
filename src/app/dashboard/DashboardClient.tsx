@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import OceanBackground from '@/components/OceanBackground'
 import UserMenu from '@/components/UserMenu'
@@ -9,8 +8,9 @@ import ImportModal from '@/components/clientes/ImportModal'
 import ExportModal from '@/components/clientes/ExportModal'
 import { Cliente } from '@/components/clientes/ClienteItem'
 import toast from 'react-hot-toast'
+import PanelAdmin from '@/components/admin/PanelAdmin'
 
-export default function DashboardClient({ clientes, error }: { clientes: Cliente[], error?: string }) {
+export default function DashboardClient({ clientes, error, isAdmin }: { clientes: Cliente[], error?: string, isAdmin?: boolean }) {
     const [activeTab, setActiveTab] = useState('lista')
     const [isImportOpen, setIsImportOpen] = useState(false)
     const [exportMode, setExportMode] = useState<'full' | 'custom' | null>(null)
@@ -42,21 +42,33 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                 </div>
 
                 {/* PESTAÑAS */}
-                <div className="flex gap-6 border-b border-gray-200 dark:border-white/10 mb-8">
+                <div className="flex gap-6 border-b border-gray-200 dark:border-white/10 mb-8 overflow-x-auto custom-scrollbar">
                     <button 
                         onClick={() => setActiveTab('lista')} 
-                        className={`pb-3 px-2 text-sm font-bold transition-colors cursor-pointer outline-none focus:outline-none ${activeTab === 'lista' ? 'border-b-2 text-gray-800 dark:text-white' : 'text-gray-500 dark:text-white/60 hover:text-gray-800 dark:hover:text-white'}`}
+                        className={`pb-3 px-2 text-sm font-bold transition-colors cursor-pointer outline-none focus:outline-none whitespace-nowrap ${activeTab === 'lista' ? 'border-b-2 text-gray-800 dark:text-white' : 'text-gray-500 dark:text-white/60 hover:text-gray-800 dark:hover:text-white'}`}
                         style={activeTab === 'lista' ? { borderBottomColor: 'var(--dynamic-accent)' } : {}}
                     >
                         Listado de Clientes
                     </button>
                     <button 
                         onClick={() => setActiveTab('nuevo')} 
-                        className={`pb-3 px-2 text-sm font-bold transition-colors cursor-pointer outline-none focus:outline-none ${activeTab === 'nuevo' ? 'border-b-2 text-gray-800 dark:text-white' : 'text-gray-500 dark:text-white/60 hover:text-gray-800 dark:hover:text-white'}`}
+                        className={`pb-3 px-2 text-sm font-bold transition-colors cursor-pointer outline-none focus:outline-none whitespace-nowrap ${activeTab === 'nuevo' ? 'border-b-2 text-gray-800 dark:text-white' : 'text-gray-500 dark:text-white/60 hover:text-gray-800 dark:hover:text-white'}`}
                         style={activeTab === 'nuevo' ? { borderBottomColor: 'var(--dynamic-accent)' } : {}}
                     >
                         + Añadir Nuevo Cliente
                     </button>
+                    {isAdmin && (
+                        <button 
+                            onClick={() => setActiveTab('admin')} 
+                            className={`pb-3 px-2 text-sm font-bold transition-colors cursor-pointer outline-none focus:outline-none whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'admin' ? 'border-b-2 text-gray-800 dark:text-white' : 'text-gray-500 dark:text-white/60 hover:text-gray-800 dark:hover:text-white'}`}
+                            style={activeTab === 'admin' ? { borderBottomColor: 'var(--dynamic-accent)' } : {}}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/>
+                            </svg>
+                            Panel de Administración
+                        </button>
+                    )}
                 </div>
 
                 {/* PESTAÑA ALTA DE CLIENTE */}
@@ -70,6 +82,11 @@ export default function DashboardClient({ clientes, error }: { clientes: Cliente
                 {/* PESTAÑA LISTADO DE CLIENTES */}
                 {activeTab === 'lista' && (
                     <ListadoClientes clientes={clientes} error={error} />
+                )}
+
+                {/* PESTAÑA ADMINS */}
+                {activeTab === 'admin' && isAdmin && (
+                    <PanelAdmin />
                 )}
             </div>
 
