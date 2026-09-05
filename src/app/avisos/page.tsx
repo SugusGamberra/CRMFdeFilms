@@ -30,10 +30,10 @@ export default function AvisosPage() {
                         En cumplimiento con el deber de información recogido en el artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico, a continuación se reflejan los siguientes datos:
                     </p>
                     <ul className="list-disc pl-5 space-y-1">
-                        <li><strong>Titular de la plataforma:</strong> (poner nombres)</li>
-                        <li><strong>NIF/CIF:</strong> (poner cif nif)</li>
-                        <li><strong>Dirección:</strong> (poner direccion)</li>
-                        <li><strong>Correo electrónico de contacto:</strong> (poner correo)</li>
+                        <li><strong>Titular de la plataforma:</strong> EcoMagic</li>
+                        <li><strong>NIF:</strong> 26500682J</li>
+                        <li><strong>Dirección:</strong> Calle Alcalde Ronquillo, 24, 29011 Málaga</li>
+                        <li><strong>Correo electrónico de contacto:</strong> info@ecomagic.com</li>
                     </ul>
 
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white border-b border-gray-200 dark:border-white/10 pb-2">
@@ -51,10 +51,13 @@ export default function AvisosPage() {
                     </p>
 
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white border-b border-gray-200 dark:border-white/10 pb-2">
-                        4. Propiedad Intelectual e Industrial
+                        4. Propiedad Intelectual, Autoría y Desarrollo
                     </h2>
                     <p>
-                        (poner nombres) es titular de todos los derechos de propiedad intelectual del código fuente, diseño, estructura de navegación y demás elementos contenidos en la aplicación. Quedan expresamente prohibidas la reproducción, alteración o ingeniería inversa de la herramienta sin autorización expresa de la titular.
+                        El diseño original, la arquitectura y el desarrollo del código fuente de este entorno de software (CRM) son obra intelectual exclusiva de <a href="https://github.com/SugusGamberra" target="_blank" rel="noopener noreferrer" className="text-[var(--dynamic-accent,var(--neu-primary))] font-bold hover:opacity-80 hover:underline transition-all">SugusGamberra</a>. 
+                    </p>
+                    <p className="mt-2">
+                        EcoMagic es titular de los derechos de uso y explotación de la plataforma para el desarrollo de su actividad. Quedan expresamente prohibidas la reproducción, copia, alteración o ingeniería inversa de la herramienta sin la autorización expresa y por escrito de la desarrolladora.
                     </p>
 
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white border-b border-gray-200 dark:border-white/10 pb-2">
@@ -68,7 +71,7 @@ export default function AvisosPage() {
                         6. Legislación y Jurisdicción
                     </h2>
                     <p>
-                        La relación se regirá por la normativa española vigente y cualquier controversia se someterá a los Juzgados y tribunales de la ciudad de (poner ciudad), salvo que la ley aplicable determine otra jurisdicción obligatoria.
+                        La relación se regirá por la normativa española vigente y cualquier controversia se someterá a los Juzgados y tribunales de la ciudad de Málaga, salvo que la ley aplicable determine otra jurisdicción obligatoria.
                     </p>
                 </div>
             </div>
