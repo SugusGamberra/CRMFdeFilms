@@ -1,4 +1,5 @@
 'use server'
+
 import { createClient } from '@supabase/supabase-js'
 
 const getAdminSupabase = () => {
@@ -55,6 +56,7 @@ export async function obtenerDatosAdmin(busqueda: string = '') {
             apiStatus: 'Online',
             systemInfo
         }
+
     } catch (e: unknown) {
         if (e instanceof Error) {
             return { error: e.message }
@@ -84,6 +86,7 @@ export async function borrarClienteAdmin(idCliente: string) {
 
 export async function actualizarClienteAdmin(formData: FormData, idEmpresa: string) {
     const supabase = getAdminSupabase()
+    
     const idCliente = formData.get('idCliente') as string
     const nombreCompleto = formData.get('nombreCompleto') as string
 
@@ -114,6 +117,7 @@ export async function actualizarClienteAdmin(formData: FormData, idEmpresa: stri
         tipo_cliente: formData.get('tipoCliente') as string,
         subtipo_empresa: formData.get('subtipoEmpresa') as string,
         tipo_otro: formData.get('tipoOtro') as string,
+        estado: formData.get('estado') as string,
     }).eq('id_cliente', idCliente).eq('id_empresa', idEmpresa)
 
     if (error) return { error: error.message }

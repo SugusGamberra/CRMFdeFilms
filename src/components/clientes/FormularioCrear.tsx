@@ -47,6 +47,18 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                 </div>
                 
                 <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Estado del Cliente</label>
+                    <select
+                        name="estado"
+                        defaultValue="Activo"
+                        className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 cursor-pointer"
+                    >
+                        <option value="Activo" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Activo</option>
+                        <option value="Inactivo" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Inactivo</option>
+                    </select>
+                </div>
+
+                <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Tipo de Cliente</label>
                     <select 
                         name="tipoCliente" 
@@ -170,7 +182,6 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Envío</label>
                             <input type="text" name="direccionEnvio" placeholder="Ej: Calle Artemisa, 2" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal (Envío)</label>
                             <input 
@@ -183,17 +194,14 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                                 className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" 
                             />
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad (Envío)</label>
                             <input type="text" name="localidadEnvio" placeholder="Ej: Puerto Real" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Provincia (Envío)</label>
                             <input type="text" name="provinciaEnvio" placeholder="Ej: Cádiz" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">País (Envío)</label>
                             <input type="text" name="paisEnvio" placeholder="Ej: España" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -210,12 +218,10 @@ export default function FormularioCrear({ onSuccess }: { onSuccess: () => void }
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Nombre de la persona</label>
                     <input type="text" name="personaContacto" placeholder="Ej: María García" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
-
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Teléfono directo</label>
                     <input type="tel" name="tfnoContacto" placeholder="Ej: +34 600 000 000" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                 </div>
-
                 <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Email directo</label>
                     <input type="email" name="emailContacto" placeholder="Ej: maria@empresa.com" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />

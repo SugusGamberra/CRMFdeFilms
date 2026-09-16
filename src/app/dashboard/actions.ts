@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation'
 export async function crearCliente(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+
     if (!user) return { error: "Usuario no autenticado." }
     
     const nombreCompleto = formData.get('nombreCompleto') as string
@@ -39,6 +40,7 @@ export async function crearCliente(formData: FormData) {
         tipo_cliente: formData.get('tipoCliente') as string,
         subtipo_empresa: formData.get('subtipoEmpresa') as string,
         tipo_otro: formData.get('tipoOtro') as string,
+        estado: formData.get('estado') as string || 'Activo',
     }])
 
     if (error) return { error: error.message }
@@ -51,10 +53,12 @@ export async function crearCliente(formData: FormData) {
 export async function actualizarCliente(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+
     if (!user) return { error: "Usuario no autenticado." }
     
     const idCliente = formData.get('idCliente') as string
     const nombreCompleto = formData.get('nombreCompleto') as string
+
     if (!nombreCompleto || nombreCompleto.trim() === '') {
         return { error: "El nombre completo es obligatorio." }
     }
@@ -82,6 +86,7 @@ export async function actualizarCliente(formData: FormData) {
         tipo_cliente: formData.get('tipoCliente') as string,
         subtipo_empresa: formData.get('subtipoEmpresa') as string,
         tipo_otro: formData.get('tipoOtro') as string,
+        estado: formData.get('estado') as string,
     }).eq('id_cliente', idCliente).eq('id_empresa', user.id)
 
     if (error) return { error: error.message }
@@ -94,11 +99,13 @@ export async function actualizarCliente(formData: FormData) {
 export async function borrarCliente(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+
     if (!user) return { error: "Usuario no autenticado." }
 
     const idCliente = formData.get('idCliente') as string
     
     const { error } = await supabase.from('clientes').delete().eq('id_cliente', idCliente).eq('id_empresa', user.id)
+
     if (error) return { error: error.message }
 
     revalidatePath('/dashboard')
@@ -119,6 +126,7 @@ export async function importarClientesLote(
 ) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+
     if (!user) return { error: "No autorizado" }
 
     try {

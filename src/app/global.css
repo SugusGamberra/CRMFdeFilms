@@ -9,8 +9,9 @@
         --neu-shadow-dark: #b8bcc2;
         --neu-shadow-light: #ffffff;
         
-        --neu-primary: #7c3aed;
-        --neu-primary-dark: #6d28d9;
+        /* Color de emergencia suave (azul neutro) en vez de lila */
+        --neu-primary: #8ca4d8; 
+        --neu-primary-dark: #647eb3;
         
         --transition-fast: 150ms;
         --transition-normal: 300ms;
@@ -40,12 +41,12 @@
     }
 
     ::-webkit-scrollbar-thumb {
-        background-color: var(--dynamic-accent, #7c3aed);
+        background-color: var(--dynamic-accent, var(--neu-primary));
         border-radius: 4px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background-color: var(--dynamic-accent, #6d28d9);
+        background-color: var(--dynamic-accent, var(--neu-primary-dark));
     }
 }
 
@@ -91,7 +92,7 @@
         cursor: not-allowed;
     }
 
-    /* BOTON DINAMICO LOGIN */
+    /* BOTON DINAMICO */
     .neu-btn-dynamic {
         background-color: var(--dynamic-accent, var(--neu-primary));
         background-image: linear-gradient(145deg, rgba(255, 255, 255, 0.25) 0%, rgba(0, 0, 0, 0.2) 100%);
@@ -148,7 +149,6 @@
 
     /* REF ANIMACIONES NEUROMORFICAS */
     
-    /* Efecto "Shimmer" (brillo de carga estilo esqueleto) */
     .shimmer {
         position: relative;
         overflow: hidden;
@@ -162,14 +162,12 @@
         animation: shimmer 1.5s infinite;
     }
 
-    /* Efecto de Skeleton (cargando datos) */
     .skeleton {
         background: linear-gradient(90deg, var(--neu-bg-secondary) 25%, var(--neu-bg-primary) 50%, var(--neu-bg-secondary) 75%);
         background-size: 200% 100%;
         animation: skeleton 1.5s infinite;
     }
 
-    /* Tooltips (textos emergentes suaves) */
     .tooltip-container:hover .tooltip,
     .tooltip-container:focus-within .tooltip {
         opacity: 1;
@@ -184,13 +182,11 @@
         transition: all var(--transition-fast);
     }
 
-    /* Panel acordeón (transición suave de altura) */
     .accordion-panel {
         overflow: hidden;
         transition: max-height 0.3s ease-out;
     }
 
-    /* Clases de animación para notificaciones o modales */
     .toast-enter {
         animation: toast-in 0.3s ease-out forwards;
     }
@@ -215,7 +211,7 @@
     .toast-success { background: linear-gradient(to bottom right, #22c55e, #16a34a) !important; }
     .toast-error { background: linear-gradient(to bottom right, #ef4444, #dc2626) !important; }
     .toast-warning { background: linear-gradient(to bottom right, #eab308, #d97706) !important; }
-    .toast-info { background: linear-gradient(to bottom right, var(--dynamic-accent), var(--neu-primary-dark)) !important; }
+    .toast-info { background: linear-gradient(to bottom right, var(--dynamic-accent, var(--neu-primary)), var(--neu-primary-dark)) !important; }
 }
 
 @layer utilities {

@@ -28,6 +28,7 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
         let W: number, H: number, DPR: number, horizonY: number, oceanH: number
         let animationFrameId: number
         let customBgTime: number | null = null
+        let lastAccent: string | null = null
 
         const loadCustomBgTime = () => {
             const stored = localStorage.getItem('neu-ui-bg-time')
@@ -143,10 +144,15 @@ export default function OceanBackground({ blur = false }: OceanBackgroundProps) 
             const P = getPalette(activeTime)
             const accentColor = getAccentColor(P)
             
-            document.documentElement.style.setProperty('--dynamic-accent', rgb(accentColor))
-
-            const theta = (activeTime - 0.25) * 2 * Math.PI
+            const colorString = rgb(accentColor);
+            document.documentElement.style.setProperty('--dynamic-accent', colorString);
             
+            if (lastAccent !== colorString) {
+                lastAccent = colorString;
+                localStorage.setItem('neu-accent-color', colorString);
+            }
+            
+            const theta = (activeTime - 0.25) * 2 * Math.PI            
             const celestialR = Math.min(W, H) * 0.045
 
             // SOL

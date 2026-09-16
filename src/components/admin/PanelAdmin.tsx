@@ -1,4 +1,5 @@
 'use client'
+
 import { useState, useEffect } from 'react'
 import { obtenerDatosAdmin, obtenerClientesAdmin, borrarClienteAdmin, actualizarClienteAdmin } from '@/app/dashboard/adminActions'
 import { Cliente } from '@/components/clientes/ClienteItem'
@@ -67,6 +68,18 @@ function ClienteAdminItem({ cliente, idEmpresa, onUpdated, onDeleted }: ClienteA
                         </div>
                         
                         <div>
+                            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Estado del Cliente</label>
+                            <select
+                                name="estado"
+                                defaultValue={cliente.estado || 'Activo'}
+                                className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 cursor-pointer"
+                            >
+                                <option value="Activo" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Activo</option>
+                                <option value="Inactivo" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Tipo de Cliente</label>
                             <select 
                                 name="tipoCliente" 
@@ -108,7 +121,7 @@ function ClienteAdminItem({ cliente, idEmpresa, onUpdated, onDeleted }: ClienteA
                                         defaultValue={cliente.tipo_otro || ''}
                                         placeholder="Especifica el tipo..." 
                                         className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 animate-in fade-in zoom-in-95" 
-                                    />
+                                     />
                                 </>
                             )}
                         </div>
@@ -264,7 +277,23 @@ function ClienteAdminItem({ cliente, idEmpresa, onUpdated, onDeleted }: ClienteA
                     </form>
 
                     {isConfirmingDelete && (
-                        <div className="mt-4 p-5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 flex flex-col items-center justify-center gap-4 animate-in fade-in zoom-in-95">
+                        <form onSubmit={async (e) => {
+                            e.preventDefault()
+                            const formData = new FormData(e.currentTarget)
+                            
+                            setIsDeleting(true)
+                            const result = await borrarClienteAdmin(cliente.id_cliente)
+                            
+                            if (result?.error) {
+                                toast.error(result.error)
+                                setIsDeleting(false)
+                            } else {
+                                toast.success('Cliente eliminado desde administración')
+                                onDeleted(cliente.id_cliente)
+                            }
+                        }} className="mt-4 p-5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 flex flex-col items-center justify-center gap-4 animate-in fade-in zoom-in-95">
+                            
+                            <input type="hidden" name="idCliente" value={cliente.id_cliente} />
                             <p className="text-sm font-bold text-red-800 dark:text-red-200 text-center">
                                 ¿Estás seguro que deseas eliminar a {cliente.nombre_completo}?<br/>Esta acción es irreversible.
                             </p>
@@ -272,17 +301,7 @@ function ClienteAdminItem({ cliente, idEmpresa, onUpdated, onDeleted }: ClienteA
                                 <button type="button" onClick={() => setIsConfirmingDelete(false)} className="neu-btn neu-btn-default neu-focus px-6 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 cursor-pointer border border-transparent">
                                     No, cancelar
                                 </button>
-                                <button type="button" disabled={isDeleting} onClick={async () => {
-                                    setIsDeleting(true)
-                                    const result = await borrarClienteAdmin(cliente.id_cliente)
-                                    if (result?.error) {
-                                        toast.error(result.error)
-                                        setIsDeleting(false)
-                                    } else {
-                                        toast.success('Cliente eliminado desde administración')
-                                        onDeleted(cliente.id_cliente)
-                                    }
-                                }} className="neu-btn neu-btn-danger neu-focus px-6 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 cursor-pointer border border-transparent">
+                                <button type="submit" disabled={isDeleting} className="neu-btn neu-btn-danger neu-focus px-6 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 cursor-pointer border border-transparent">
                                     {isDeleting && (
                                         <span aria-hidden="true">
                                             <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -294,15 +313,18 @@ function ClienteAdminItem({ cliente, idEmpresa, onUpdated, onDeleted }: ClienteA
                                     <span>{isDeleting ? 'Eliminando...' : 'Sí, eliminar'}</span>
                                 </button>
                             </div>
-                        </div>
+                        </form>
                     )}
                 </div>
             ) : (
                 <div>
                     <div className={`flex justify-between items-start ${isExpanded ? 'border-b border-gray-200 dark:border-white/10 pb-4 mb-4' : ''} transition-all duration-300`}>
                         <div>
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-white">{cliente.nombre_completo}</h3>
-                            <p className="text-sm text-gray-500 dark:text-white/60">
+                            <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+                                {cliente.nombre_completo}
+                                <span className={`shrink-0 w-3.5 h-3.5 rounded-full shadow-lg ${cliente.estado === 'Inactivo' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse'}`} title={cliente.estado === 'Inactivo' ? 'Inactivo' : 'Activo'}></span>
+                            </h3>
+                            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
                                 {cliente.tipo_cliente === 'Empresa' && cliente.subtipo_empresa ? `Empresa - ${cliente.subtipo_empresa}` :
                                 cliente.tipo_cliente === 'Otro' && cliente.tipo_otro ? `Otro: ${cliente.tipo_otro}` :
                                 cliente.tipo_cliente || 'Sin tipo definido'} | {cliente.cif_nif || 'Sin CIF/NIF'}

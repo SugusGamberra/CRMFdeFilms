@@ -32,12 +32,18 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
+                
                 const savedTheme = localStorage.getItem('neu-ui-theme');
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
                   document.documentElement.classList.add('dark');
                 } else {
                   document.documentElement.classList.remove('dark');
+                }
+                
+                const savedColor = localStorage.getItem('neu-accent-color');
+                if (savedColor) {
+                  document.documentElement.style.setProperty('--dynamic-accent', savedColor);
                 }
               } catch (e) {}
             `,

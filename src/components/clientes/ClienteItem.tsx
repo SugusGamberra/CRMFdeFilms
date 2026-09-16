@@ -28,6 +28,7 @@ export interface Cliente {
     tfno_contacto?: string
     email_contacto?: string
     notas?: string
+    estado?: string
     created_at?: string
 }
 
@@ -77,12 +78,23 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Nombre Completo / Razón Social *</label>
                             <input type="text" name="nombreCompleto" defaultValue={cliente.nombre_completo || ''} required placeholder="Ej: EcoMagic" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">CIF / NIF</label>
                             <input type="text" name="cifNif" defaultValue={cliente.cif_nif || ''} placeholder="Ej: B12345678" maxLength={9} pattern="^[A-Z0-9]{9}$" title="El formato debe tener exactamente 9 caracteres (números y letra)." onInput={(e) => { e.currentTarget.value = e.currentTarget.value.toUpperCase().replace(/[^A-Z0-9]/g, '') }} className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
                         
+                        <div>
+                            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Estado del Cliente</label>
+                            <select
+                                name="estado"
+                                defaultValue={cliente.estado || 'Activo'}
+                                className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 cursor-pointer"
+                            >
+                                <option value="Activo" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Activo</option>
+                                <option value="Inactivo" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Inactivo</option>
+                            </select>
+                        </div>
+
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Tipo de Cliente</label>
                             <select 
@@ -98,7 +110,6 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                                 <option value="Otro" className="bg-white dark:bg-slate-800 text-gray-800 dark:text-white">Otro</option>
                             </select>
                         </div>
-
                         <div>
                             {tipoClienteEdit === 'Empresa' && (
                                 <>
@@ -126,21 +137,18 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                                         defaultValue={cliente.tipo_otro || ''}
                                         placeholder="Especifica el tipo..." 
                                         className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5 animate-in fade-in zoom-in-95" 
-                                    />
+                                     />
                                 </>
                             )}
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Página Web</label>
                             <input type="text" name="web" defaultValue={cliente.web || ''} placeholder="Ej: www.ecomagic.es" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Correo Electrónico (Empresa)</label>
                             <input type="email" name="email" defaultValue={cliente.email || ''} placeholder="Ej: contacto@empresa.com" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Teléfono (Empresa)</label>
                             <input type="tel" name="telefono" defaultValue={cliente.telefono || ''} placeholder="Ej: +34 612 345 678" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -210,7 +218,6 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Dirección de Envío</label>
                                     <input type="text" name="direccionEnvio" defaultValue={cliente.direccion_envio || ''} placeholder="Ej: Calle Artemisa, 2" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                 </div>
-
                                 <div>
                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Código Postal (Envío)</label>
                                     <input 
@@ -224,17 +231,14 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                                         className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" 
                                     />
                                 </div>
-
                                 <div>
                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Localidad (Envío)</label>
                                     <input type="text" name="localidadEnvio" defaultValue={cliente.localidad_envio || ''} placeholder="Ej: Puerto Real" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                 </div>
-
                                 <div>
                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Provincia (Envío)</label>
                                     <input type="text" name="provinciaEnvio" defaultValue={cliente.provincia_envio || ''} placeholder="Ej: Cádiz" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                                 </div>
-
                                 <div>
                                     <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">País (Envío)</label>
                                     <input type="text" name="paisEnvio" defaultValue={cliente.pais_envio || ''} placeholder="Ej: España" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -251,12 +255,10 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Nombre de la persona</label>
                             <input type="text" name="personaContacto" defaultValue={cliente.persona_contacto || ''} placeholder="Ej: María García" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Teléfono directo</label>
                             <input type="tel" name="tfnoContacto" defaultValue={cliente.tfno_contacto || ''} placeholder="Ej: +34 600 000 000" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
                         </div>
-
                         <div>
                             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-white/80">Email directo</label>
                             <input type="email" name="emailContacto" defaultValue={cliente.email_contacto || ''} placeholder="Ej: maria@empresa.com" className="w-full px-4 py-3 rounded-xl text-sm text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-white/30 transition-all duration-200 focus:outline-none neu-inset bg-transparent dark:bg-white/5 border border-gray-300 dark:border-white/5" />
@@ -352,8 +354,11 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                 <div>
                     <div className="flex justify-between items-start border-b border-gray-200 dark:border-white/10 pb-4 mb-4">
                         <div>
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-white">{cliente.nombre_completo}</h3>
-                            <p className="text-sm text-gray-500 dark:text-white/60">
+                            <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+                                {cliente.nombre_completo}
+                                <span className={`shrink-0 w-3.5 h-3.5 rounded-full shadow-lg ${cliente.estado === 'Inactivo' ? 'bg-red-500 shadow-red-500/50' : 'bg-green-500 shadow-green-500/50 animate-pulse'}`} title={cliente.estado === 'Inactivo' ? 'Inactivo' : 'Activo'}></span>
+                            </h3>
+                            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
                                 {cliente.tipo_cliente === 'Empresa' && cliente.subtipo_empresa ? `Empresa - ${cliente.subtipo_empresa}` :
                                 cliente.tipo_cliente === 'Otro' && cliente.tipo_otro ? `Otro: ${cliente.tipo_otro}` :
                                 cliente.tipo_cliente || 'Sin tipo definido'} | {cliente.cif_nif || 'Sin CIF/NIF'}
@@ -384,14 +389,12 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                                 <p>{cliente.codigo_postal_envio || '-'} {cliente.pais_envio || '-'}</p>
                             </div>
                         )}
-
                         <div>
                             <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Dirección de Facturación</p>
                             <p>{cliente.direccion_facturacion || '-'}</p>
                             <p>{cliente.localidad || '-'}, {cliente.provincia || '-'}</p>
                             <p>{cliente.codigo_postal || '-'} {cliente.pais || '-'}</p>
                         </div>
-
                         <div>
                             <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Persona de Contacto</p>
                             <p>Nombre: {cliente.persona_contacto || '-'}</p>
@@ -399,7 +402,6 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                             <p>Email: {cliente.email_contacto || '-'}</p>
                         </div>
                     </div>
-
                     {cliente.notas && (
                         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/10">
                             <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Notas / Observaciones</p>
@@ -410,13 +412,16 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                 */
 
                 /* VISTA ACORDEÓN CON BOTÓN VER
-                comentar descomentar segun la opcion que elija
+                comentar descomentar segun la opcion que elijas
                 */
                 <div>
                     <div className={`flex justify-between items-start ${isExpanded ? 'border-b border-gray-200 dark:border-white/10 pb-4 mb-4' : ''} transition-all duration-300`}>
                         <div>
-                            <h3 className="text-xl font-bold text-gray-800 dark:text-white">{cliente.nombre_completo}</h3>
-                            <p className="text-sm text-gray-500 dark:text-white/60">
+                            <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+                                {cliente.nombre_completo}
+                                <span className={`shrink-0 w-3.5 h-3.5 rounded-full shadow-lg ${cliente.estado === 'Inactivo' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse'}`} title={cliente.estado === 'Inactivo' ? 'Inactivo' : 'Activo'}></span>
+                            </h3>
+                            <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
                                 {cliente.tipo_cliente === 'Empresa' && cliente.subtipo_empresa ? `Empresa - ${cliente.subtipo_empresa}` :
                                 cliente.tipo_cliente === 'Otro' && cliente.tipo_otro ? `Otro: ${cliente.tipo_otro}` :
                                 cliente.tipo_cliente || 'Sin tipo definido'} | {cliente.cif_nif || 'Sin CIF/NIF'}
@@ -453,14 +458,12 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                                         <p>{cliente.codigo_postal_envio || '-'} {cliente.pais_envio || '-'}</p>
                                     </div>
                                 )}
-
                                 <div>
                                     <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Dirección de Facturación</p>
                                     <p>{cliente.direccion_facturacion || '-'}</p>
                                     <p>{cliente.localidad || '-'}, {cliente.provincia || '-'}</p>
                                     <p>{cliente.codigo_postal || '-'} {cliente.pais || '-'}</p>
                                 </div>
-
                                 <div>
                                     <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Persona de Contacto</p>
                                     <p>Nombre: {cliente.persona_contacto || '-'}</p>
@@ -468,7 +471,6 @@ export default function ClienteItem({ cliente, isEditing, setEditingId }: Client
                                     <p>Email: {cliente.email_contacto || '-'}</p>
                                 </div>
                             </div>
-
                             {cliente.notas && (
                                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/10">
                                     <p className="font-bold mb-1 uppercase tracking-wide text-xs text-gray-800 dark:text-white">Notas / Observaciones</p>
